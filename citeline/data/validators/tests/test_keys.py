@@ -4,9 +4,7 @@ from citeline import testing
 
 
 class ValidateKeyUnitTests(unittest.TestCase):
-    """
-    Tests for key validator.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def test_good_keys_return_key(self):
@@ -37,9 +35,7 @@ class ValidateKeyUnitTests(unittest.TestCase):
 
 
 class KeyValidatorUnitTests(unittest.TestCase):
-    """
-    Tests for :class:`.KeyValidator`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):

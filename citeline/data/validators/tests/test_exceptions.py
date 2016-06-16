@@ -4,9 +4,7 @@ from citeline import testing
 
 
 class ValidationErrorTests(unittest.TestCase):
-    """
-    Tests for :class:`.ValidationError`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def test_default_msg(self):
@@ -26,6 +24,8 @@ class ValidationErrorTests(unittest.TestCase):
         self.assertEqual(exception.message, msg)
 
     def test_as_string(self):
+        """ValidationError.__init__() can set a custom `msg` string (as string)
+        """
         msg = 'Custom validation error message.'
         from ..exceptions import ValidationError
         exception = ValidationError(msg)

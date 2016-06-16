@@ -4,9 +4,7 @@ from citeline import testing
 
 
 class ValidateObjectIdTests(unittest.TestCase):
-    """
-    Tests for :function:`.validate_objectid`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def test_valid_ids_return_object_id_instance(self):
@@ -41,9 +39,7 @@ class ValidateObjectIdTests(unittest.TestCase):
 
 
 class ObjectIdValidatorTests(unittest.TestCase):
-    """
-    Tests for :class:`.ObjectIdDataValidator`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):

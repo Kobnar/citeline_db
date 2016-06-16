@@ -4,9 +4,7 @@ from citeline import testing
 
 
 class ValidateUsernameUnitTests(unittest.TestCase):
-    """
-    Tests for username validator.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def test_good_usernames_return_username(self):
@@ -37,9 +35,7 @@ class ValidateUsernameUnitTests(unittest.TestCase):
 
 
 class UsernameValidatorUnitTests(unittest.TestCase):
-    """
-    Tests for :class:`.UsernameDataValidator`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):

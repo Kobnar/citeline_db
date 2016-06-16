@@ -4,9 +4,7 @@ from citeline import testing
 
 
 class ValidatePasswordUnitTests(unittest.TestCase):
-    """
-    Tests for password validator.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def test_good_passwords_return_password(self):
@@ -37,9 +35,7 @@ class ValidatePasswordUnitTests(unittest.TestCase):
 
 
 class PasswordValidatorUnitTests(unittest.TestCase):
-    """
-    Tests for :class:`.PasswordDataValidator`.
-    """
+
     layer = testing.layers.UnitTestLayer
 
     def setUp(self):
