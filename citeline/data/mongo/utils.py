@@ -87,6 +87,13 @@ class IDeserializable(object):
     An interface providing the methods to deserialize an object.
     """
 
+    def _deserialize(self, data):
+        for key, value in data.items():
+            try:
+                getattr(self, key).deserialize(value)
+            except AttributeError:
+                setattr(self, key, value)
+
     def deserialize(self, data):
         """
         Deserializes a nested dictionary of values into a Python object. Can
@@ -94,11 +101,7 @@ class IDeserializable(object):
 
         :param data: A nested dictionary of values
         """
-        for key, value in data.items():
-            try:
-                getattr(self, key).deserialize(value)
-            except AttributeError:
-                setattr(self, key, value)
+        self._deserialize(data)
 
 
 class IEmbeddedDocument(mongoengine.EmbeddedDocument,
