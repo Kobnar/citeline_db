@@ -1,0 +1,116 @@
+{
+  "invalid_emails": [
+    "missing@domain",
+    "missing_host@.com",
+    "missing_at_email.com",
+    "has space@email.com",
+    "k1i2.@fwkd4xx7yn32.com"
+  ],
+  "invalid_passwords": [
+    "aB3$",
+    "aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$aB3$",
+    "mi55ingu%%ercase",
+    "MI%%INGL0WERC4SE",
+    "Mi%%ingNumber",
+    "Mi55ingSymbol"
+  ],
+  "invalid_uris": [
+    "nodomain",
+    "g^gl.X"
+  ],
+  "invalid_usernames": [
+    "AnInsanelyLongNameThatShouldNotBeAllowedBecauseWTF",
+    "White space",
+    "New\nLine",
+    "Sy^mb@l$",
+    "Fart Man"
+  ],
+  "invalid_keys": [
+    "b91fbccaf23128eaa60b0adaeb72da05143966c63ffb1fc96aef38",
+    "0296b%7780a_deaf1312a7b033f76bfdda4808&76df*039bfc939f77",
+    "427c65dda40e5594d6ad80402cf6545b8c559e0bd38bb83a982c55c023"
+  ],
+  "invalid_object_ids": [
+    "badId",
+    "5697a8e530f1932f48cb5efea",
+    "5697a8e530f1932f48cb5ef"
+  ],
+  "valid_emails": [
+    "test@email.com",
+    "test@admin.com",
+    "admin@test.com",
+    "8dia6rjt1m5@jmajvk7jg6c3.com",
+    "xdiq3dk7mky@2sfp69yg9.com",
+    "i5apzchkx5o6hd@8r9h3u0kzne.com",
+    "lw_b54bhpeo@zzgbsn.com",
+    "8dxx@xu7m9-00.com",
+    "0ln1nv@dq93fd5xq.com",
+    "lcy01g5bd5.bcv_@n7xzp1.com",
+    "tkrm@87k9hmud.com",
+    "9c6@zc62w5esr49.com",
+    "6bhq8@l8le5scdg.com",
+    "grpsuh@dgc3u6t1lm3.com",
+    "x6z0-sq.w@wko323jj0nq.com",
+    "a91@1h-r12.com",
+    "par9@pqrb264sx.com",
+    "xqh@xuhti81iopz.com",
+    "otpk083-x@v3di565ibq4i.com",
+    "g2jvfibdxus8rnx@o9gfao.com",
+    "ih01.fzalnk8st9@ueob-5ovil3n.com",
+    "mhptect@j1tuc4p.com"
+  ],
+  "valid_passwords": [
+    "baPru4TudR?w?PH*thEdraZ*sp4dra#?",
+    "-6Cud8WUcRes#7g3QAPab@u6#naPruS",
+    "tet-&r+th8brufecr6gUDr3ste@*RA",
+    "SWu8H5Q=p2ad2u_-a_umjatra=azu",
+    "me#acrap#amedA5eK@teCRebRuva",
+    "5+ukaXapaCse_Ag7kEdedEpusEg",
+    "tu6@uwRubrA7!zucrAmU-7XAcr",
+    "ru?uWrEbr8Raf8W!eqeVrE8!b",
+    "pewr3Pre_azesT#Kad6uxatH",
+    "CrusTug8D?xaFaW=Th2daz+",
+    "kake+6saJEsP4Frk-vuYu4",
+    "awrPhe*axuSt6thuTra8?",
+    "#uwra5aTUWaYQeKUya5a",
+    "y_Jefex7kUgu4RuyUcr",
+    "cUHub*ECh2Phum*zA3",
+    "B6qaspAWa*ceya*wu",
+    "6eBthAja5uqu?pru",
+    "trar$vAsw6AVEW*",
+    "cuD$fReC8eCh2P",
+    "V_$8ucenuCrEa",
+    "4@8aDaf$wEhA",
+    "S2e$e35pes8",
+    "5#w5brAp8u",
+    "pru6Huch#",
+    "fr3dEw#d"
+  ],
+  "valid_uris": [
+    "http://www.google.com",
+    "http://www.facebook.com",
+    "http://http://www.radiolab.org/"
+  ],
+  "valid_usernames": [
+    "abc",
+    "sgt_ludwig",
+    "Sgt_ludwig",
+    "aeris_app",
+    "estuche96",
+    "PoloRoFormacion",
+    "12leading_number",
+    "HarryPotterIsAClownAndSoIsFrank"
+  ],
+  "valid_keys": [
+    "b91fbccaf23128eaa60b0adaeb72da05143966c63ffb1fc96aef3868",
+    "0296bb7780a3deaf1312a7b033f76bfdda4808c76df8039bfc939f77",
+    "427c65dda40e5594d6ad80402cf6545b8c559e0bd38bb83a982c55c0"
+  ],
+  "valid_object_ids": [
+    "5697a8e530f1932f48cb5efe",
+    "5697a8e530f1932f48cb5eff",
+    "5697a8e530f1932f48cb5f00",
+    "5697a8e530f1932f48cb5f01",
+    "5697a8e530f1932f48cb5f02"
+  ]
+}
