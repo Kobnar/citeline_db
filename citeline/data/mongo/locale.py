@@ -22,7 +22,7 @@ class Year(IEmbeddedDocument):
             return str(self.value) + ' A.C.E.'
 
     def _serialize(self, fields):
-        return int(self.value)
+        return int(self.value) if self.value else None
 
     def _deserialize(self, data):
         self.value = data
