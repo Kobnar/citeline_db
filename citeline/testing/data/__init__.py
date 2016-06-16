@@ -8,6 +8,15 @@ def _load_json_file(filename):
     return json.loads(json_data.decode('utf-8'))
 
 
+def _load_people_data():
+    test_data = _load_json_file('people.json')
+    return test_data
+
+
+def people():
+    return _load_people_data()
+
+
 def _load_validation_data(key):
     test_data = _load_json_file('validation.json')
     return test_data[key]
