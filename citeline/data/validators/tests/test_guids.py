@@ -37,6 +37,15 @@ class ValidateObjectIdTests(unittest.TestCase):
             result = validate_objectid(id_str)
             self.assertIsNone(result)
 
+    def test_invalid_type_returns_none(self):
+        """validate_isbn() returns `None` for invalid types
+        """
+        from ..oids import validate_objectid
+        invalid_types = (12, [1, 2], True)
+        for oid in invalid_types:
+            result = validate_objectid(oid)
+            self.assertIsNone(result)
+
 
 class ObjectIdValidatorTests(unittest.TestCase):
 
