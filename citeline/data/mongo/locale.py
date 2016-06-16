@@ -9,7 +9,8 @@ class Year(IEmbeddedDocument):
     """
     A representation of a single year.
     """
-    value = IntField(required=True, db_field='value')
+
+    value = IntField(db_field='value')
 
     @property
     def full(self):
@@ -34,6 +35,7 @@ class ISBN(IEmbeddedDocument):
 
     NOTE: This class requires hyphenation.
     """
+
     _isbn10 = StringField(db_field='isbn10')
     _isbn13 = StringField(db_field='isbn13')
 

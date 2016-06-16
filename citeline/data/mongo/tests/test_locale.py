@@ -17,13 +17,6 @@ class YearUnitTestCase(YearBaseTestCase):
     def tearDown(self):
         self.year = None
 
-    def test_value_is_required(self):
-        """Year.value is a required field
-        """
-        from mongoengine import ValidationError
-        with self.assertRaises(ValidationError):
-            self.year.validate()
-
     def test_full_is_read_only(self):
         """Year.full is read-only
         """
