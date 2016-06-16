@@ -285,3 +285,14 @@ class PageRangeTestCase(unittest.TestCase):
         self.range.range = start, end
         result = str(self.range)
         self.assertEqual(expected, result)
+
+    def test_serialize_returns_correct_tuple(self):
+        """PageRange.serialize() returns a correct tuple of values
+        """
+        start = 12
+        end = 13
+        expected = (12, 13)
+        self.range.start = start
+        self.range.end = end
+        result = self.range.serialize()
+        self.assertEqual(expected, result)
