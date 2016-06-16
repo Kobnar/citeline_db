@@ -59,3 +59,15 @@ def valid_object_ids():
 
 def invalid_object_ids():
     return _load_validation_data('invalid_object_ids')
+
+
+def valid_isbn13s():
+    return _load_validation_data('valid_isbn13s')
+
+
+def valid_isbn10s():
+    return _load_validation_data('valid_isbn10s')
+
+
+def invalid_isbns():
+    return _load_validation_data('invalid_isbns')
