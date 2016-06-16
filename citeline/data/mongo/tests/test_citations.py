@@ -17,10 +17,33 @@ class CitationsUnitTestCase(CitationsBaseTestCase):
 
 class CitationsIntegrationTestCase(CitationsBaseTestCase):
 
+    layer = testing.layers.MongoIntegrationTestLayer
+
     def setUp(self):
+        from ..sources import Source
         from ..citations import Citation
+        Source.drop_collection()
         Citation.drop_collection()
         super().setUp()
+
+    def test_serialize_source(self):
+        """
+        Citation.serialize() returns an accurately serialized source reference
+        """
+        from ..sources import Source
+        source = Source()
+        source.title = 'Test Source'
+        source.save()
+
+        self.citation.source = source
+
+        expected = {
+            'id': None,
+            'source': str(source.id),
+            'note': None}
+
+        result = self.citation.serialize()
+        self.assertEqual(expected, result)
 
 
 class TextCitationsBaseTestCase(unittest.TestCase):
@@ -190,7 +213,7 @@ class BookCitationsBaseTestCase(unittest.TestCase):
 
     def setUp(self):
         from ..citations import BookCitation
-        self.book = BookCitation()
+        self.citation = BookCitation()
 
 
 class BookCitationsUnitTestCase(BookCitationsBaseTestCase):
@@ -203,6 +226,47 @@ class BookCitationsIntegrationTestCase(BookCitationsBaseTestCase):
     layer = testing.layers.MongoIntegrationTestLayer
 
     def setUp(self):
+        from ..people import Person
+        from ..organizations import Publisher
+        from ..sources import BookSource
         from ..citations import BookCitation
+        Person.drop_collection()
+        Publisher.drop_collection()
+        BookSource.drop_collection()
         BookCitation.drop_collection()
         super().setUp()
+
+    def test_serialize_returns_correct_data(self):
+        """BookCitation.serialize() returns a correct dictionary of data
+        """
+        pages = 'pg. 123-124'
+
+        from ..organizations import Publisher
+        publisher = Publisher()
+        publisher.name = 'Nobody\'s Publishing House'
+        publisher.save()
+
+        from ..people import Person
+        person = Person()
+        person.name.full = 'John Nobody Doe'
+        person.save()
+
+        from ..sources import BookSource
+        source = BookSource()
+        source.title = 'Some Book'
+        source.authors.append(person)
+        source.publisher = publisher
+        source.save()
+
+        self.citation.source = source
+        self.citation.pages.range = pages
+
+        expected = {
+            'id': None,
+            'source': str(source.id),
+            'note': None,
+            'text': None,
+            'pages': (123, 124)}
+
+        result = self.citation.serialize()
+        self.assertEqual(expected, result)
