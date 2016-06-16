@@ -1,18 +1,17 @@
 import re
-
-from mongoengine import IntField, StringField
+import mongoengine
 
 from citeline.data import validators
 
-from .utils import IEmbeddedDocument
+from . import utils
 
 
-class Year(IEmbeddedDocument):
+class Year(utils.IEmbeddedDocument):
     """
     A representation of a single year.
     """
 
-    value = IntField(db_field='value')
+    value = mongoengine.IntField(db_field='value')
 
     @property
     def full(self):
@@ -31,15 +30,15 @@ class Year(IEmbeddedDocument):
         self.value = data
 
 
-class ISBN(IEmbeddedDocument):
+class ISBN(utils.IEmbeddedDocument):
     """
     An international standard book number (ISBN).
 
     NOTE: This class requires hyphenation.
     """
 
-    _isbn10 = StringField(db_field='isbn10')
-    _isbn13 = StringField(db_field='isbn13')
+    _isbn10 = mongoengine.StringField(db_field='isbn10')
+    _isbn13 = mongoengine.StringField(db_field='isbn13')
 
     @property
     def isbn10(self):
@@ -89,13 +88,13 @@ class ISBN(IEmbeddedDocument):
         self.set_isbn(isbn)
 
 
-class PageRange(IEmbeddedDocument):
+class PageRange(utils.IEmbeddedDocument):
     """
     The page number component of a valid citation (e.g. "pg. 105-106")
     """
 
-    start = IntField(db_field='start', required=True)
-    end = IntField(db_field='end')
+    start = mongoengine.IntField(db_field='start', required=True)
+    end = mongoengine.IntField(db_field='end')
 
     @property
     def range(self):

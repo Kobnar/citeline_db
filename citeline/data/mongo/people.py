@@ -1,19 +1,19 @@
-from mongoengine import StringField, EmbeddedDocumentField
+import mongoengine
 
-from .locale import Year
-from .utils import IDocument, IEmbeddedDocument
+from . import locale
+from . import utils
 
 
-class Name(IEmbeddedDocument):
+class Name(utils.IEmbeddedDocument):
     """
     A person's full name.
     """
 
-    title = StringField(required=True, unique=True)
-    first = StringField()
-    middle = StringField()
-    last = StringField(required=True)
-    _full = StringField(db_field='full', required=True, unique=True)
+    title = mongoengine.StringField(required=True, unique=True)
+    first = mongoengine.StringField()
+    middle = mongoengine.StringField()
+    last = mongoengine.StringField(required=True)
+    _full = mongoengine.StringField(db_field='full', required=True, unique=True)
 
     @property
     def full(self):
@@ -87,15 +87,15 @@ class Name(IEmbeddedDocument):
         }
 
 
-class Person(IDocument):
+class Person(utils.IDocument):
     """
     A known person (typically an author, researcher or editor).
     """
 
-    name = EmbeddedDocumentField(Name, required=True, default=Name)
-    description = StringField(db_field='desc')
-    birth = EmbeddedDocumentField(Year, default=Year)
-    death = EmbeddedDocumentField(Year, default=Year)
+    name = mongoengine.EmbeddedDocumentField(Name, required=True, default=Name)
+    description = mongoengine.StringField(db_field='desc')
+    birth = mongoengine.EmbeddedDocumentField(locale.Year, default=locale.Year)
+    death = mongoengine.EmbeddedDocumentField(locale.Year, default=locale.Year)
 
     def _serialize(self, fields):
         return {

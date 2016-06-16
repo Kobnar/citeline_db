@@ -1,16 +1,17 @@
-from mongoengine import StringField, EmbeddedDocumentField
+import mongoengine
 
-from .locale import Year
-from .utils import IDocument
+from . import locale
+from . import utils
 
 
-class Organization(IDocument):
+class Organization(utils.IDocument):
     """
     An organization of any type.
     """
 
-    name = StringField(required=True, unique=True)
-    established = EmbeddedDocumentField(Year, db_field='est', default=Year)
+    name = mongoengine.StringField(required=True, unique=True)
+    established = mongoengine.EmbeddedDocumentField(
+        locale.Year, db_field='est', default=locale.Year)
 
     meta = {'allow_inheritance': True}
 

@@ -1,25 +1,23 @@
 import bson
+import mongoengine
 
-from mongoengine.context_managers import no_dereference
-from mongoengine import StringField, ListField, ReferenceField,\
-    EmbeddedDocumentField
-
-from .people import Person
-from .organizations import Publisher
-from .locale import Year, ISBN
-from .utils import IDocument
+from . import people
+from . import organizations as orgs
+from . import locale
+from . import utils
 
 
-class Source(IDocument):
+class Source(utils.IDocument):
     """
     A cited source of any type.
     """
 
     MEDIUMS = ('PRINT', 'WEB')
 
-    title = StringField(required=True)
-    medium = StringField(required=True, choices=MEDIUMS, default=MEDIUMS[0])
-    description = StringField(db_field='desc')
+    title = mongoengine.StringField(required=True)
+    medium = mongoengine.StringField(
+        required=True, choices=MEDIUMS, default=MEDIUMS[0])
+    description = mongoengine.StringField(db_field='desc')
 
     meta = {'allow_inheritance': True}
 
@@ -37,8 +35,10 @@ class TextSource(Source):
     A cited resource containing text.
     """
 
-    authors = ListField(ReferenceField(Person), required=True, default=[])
-    editors = ListField(ReferenceField(Person), default=[])
+    authors = mongoengine.ListField(
+        mongoengine.ReferenceField(people.Person), required=True, default=[])
+    editors = mongoengine.ListField(
+        mongoengine.ReferenceField(people.Person), default=[])
 
     def _serialize(self, fields):
         source = super()._serialize(fields)
@@ -60,11 +60,12 @@ class BookSource(TextSource):
     A cited book resource.
     """
 
-    edition = StringField()
-    publisher = ReferenceField(Publisher)
-    published = EmbeddedDocumentField(Year, default=Year)
-    location = StringField()
-    isbn = EmbeddedDocumentField(ISBN, default=ISBN)
+    edition = mongoengine.StringField()
+    publisher = mongoengine.ReferenceField(orgs.Publisher)
+    published = mongoengine.EmbeddedDocumentField(
+        locale.Year, default=locale.Year)
+    location = mongoengine.StringField()
+    isbn = mongoengine.EmbeddedDocumentField(locale.ISBN, default=locale.ISBN)
 
     def _serialize(self, fields):
         source = super()._serialize(fields)
