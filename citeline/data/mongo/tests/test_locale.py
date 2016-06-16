@@ -106,6 +106,12 @@ class ISBNUnitTestCase(ISBNBaseTestCase):
             self.isbn.set_isbn(isbn)
             self.assertEqual(self.isbn.isbn10, expected)
 
+    def test_isbn_sets_none_value(self):
+        self.isbn.set_isbn('9780985339890')
+        self.isbn.set_isbn(None)
+        self.assertIsNone(self.isbn.isbn10)
+        self.assertIsNone(self.isbn.isbn13)
+
     def test_isbn_raises_exception_with_bad_ISBN(self):
         """ISBN.isbn() raises an exception for an invalid ISBN
         """
