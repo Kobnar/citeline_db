@@ -36,6 +36,15 @@ class ValidateISBNTests(unittest.TestCase):
             result = validate_isbn(isbn)
             self.assertIsNone(result)
 
+    def test_invalid_type_returns_none(self):
+        """validate_isbn() returns `None` for invalid types
+        """
+        from ..isbns import validate_isbn
+        invalid_types = (12, [1, 2], True)
+        for isbn in invalid_types:
+            result = validate_isbn(isbn)
+            self.assertIsNone(result)
+
 
 class ISBNValidatorTests(unittest.TestCase):
 
