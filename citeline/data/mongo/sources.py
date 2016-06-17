@@ -81,7 +81,7 @@ class BookSource(TextSource):
         source = super()._serialize(fields)
         source.update({
             'edition': self.edition,
-            'publisher': str(self._data['publisher'].id),
+            'publisher': str(self._data['publisher'].id) if self.publisher else None,
             'published': self.published,
             'location': self.location,
             'isbn10': self.isbn10,
