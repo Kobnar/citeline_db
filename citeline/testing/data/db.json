@@ -1,0 +1,62 @@
+{
+    "people": [
+        {
+            "name": {
+                "title": "J.N. Doe",
+                "first": "John",
+                "middle": "Nobody",
+                "last": "Doe",
+                "full": "John Nobody Doe"
+            },
+            "description": "Nobody knows who he is or really anything about him.",
+            "birth": null,
+            "death": null
+        },
+        {
+            "name": {
+                "title": "Ludwig von Mises",
+                "first": "Ludwig",
+                "middle": "Heinrich Edler Von",
+                "last": "Mises",
+                "full": "Ludwig Heinrich Edler Von Mises"
+            },
+            "description": "Ludwig Heinrich Edler von Mises was a theoretical Austrian School economist.",
+            "birth": 1881,
+            "death": 1973
+        },
+        {
+            "name": {
+                "title": "F.A. Hayek",
+                "first": "Friedrich",
+                "middle": null,
+                "last": "Hayek",
+                "full": "Friedrich Hayek"
+            },
+            "description": "Friedrich Hayek was an Austrian and British economist and philosopher best known for his defense of classical liberalism.",
+            "birth": 1899,
+            "death": 1992
+        },
+        {
+            "name": {
+                "title": "Thomas Sowell",
+                "first": "Thomas",
+                "middle": null,
+                "last": "Sowell",
+                "full": "Thomas Sowell"
+            },
+            "description": "Thomas Sowell is an American economist, social theorist, political philosopher, and author.",
+            "birth": 1930,
+            "death": null
+        }
+    ],
+    "organizations": [
+        {
+            "name": "Random House",
+            "established": 1927
+        },
+        {
+            "name": "Roland-Kjos Publishing",
+            "estbalished": 2013
+        }
+    ]
+}
