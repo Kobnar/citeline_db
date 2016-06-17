@@ -136,6 +136,23 @@ class TextSourceIntegrationTestCase(TextSourceBaseTestCase):
         result = self.text.authors[0].name.full
         self.assertEqual(expected, result)
 
+    def test_deserialize_editors(self):
+        """TextSource.deserialize() sets references to editors
+        """
+        full_name = 'John Nobody Doe'
+
+        from ..people import Person
+        editor = Person()
+        editor.name.full = full_name
+        editor.save()
+
+        data = {'editors': [str(editor.id)]}
+
+        self.text.deserialize(data)
+        expected = full_name
+        result = self.text.editors[0].name.full
+        self.assertEqual(expected, result)
+
 
 class BookSourceBaseTestCase(unittest.TestCase):
 
@@ -249,18 +266,4 @@ class BookSourceIntegrationTestCase(BookSourceBaseTestCase):
             'isbn13': '9780985339890'}
 
         result = self.book.serialize()
-        self.assertEqual(expected, result)
-
-    def test_deserialize_publisher(self):
-        """TextSource.deserialize() sets references to authors
-        """
-        pub_name = 'Nothing House'
-        from ..organizations import Publisher
-        publisher = Publisher()
-        publisher.name = pub_name
-        publisher.save()
-        data = {'publisher': str(publisher.id)}
-        self.book.deserialize(data)
-        expected = pub_name
-        result = self.book.publisher.name
         self.assertEqual(expected, result)

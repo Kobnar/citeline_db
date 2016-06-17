@@ -1,6 +1,8 @@
 import bson
 import mongoengine
 
+from citeline import data as db
+
 from . import people
 from . import organizations as orgs
 from . import locale
@@ -49,10 +51,18 @@ class TextSource(Source):
         return source
 
     def _deserialize(self, data):
-        authors = data.get('authors') or []
-        editors = data.get('editors') or []
-        self.authors = [bson.ObjectId(a) for a in authors]
-        self.editors = [bson.ObjectId(e) for e in editors]
+        super()._deserialize(data)
+        # Get author and editor ObjectId lists
+        author_ids = data.get('authors')
+        editor_ids = data.get('editors')
+        # Create a single query set from both lists
+        all_ids = (author_ids or []) + (editor_ids or [])
+        all_ppl = db.Person.objects(id__in=all_ids)
+        # Add authors and editors to list if they were set
+        if author_ids:
+            self.authors = [a for a in all_ppl if str(a.id) in author_ids]
+        if editor_ids:
+            self.editors = [e for e in all_ppl if str(e.id) in editor_ids]
 
 
 class BookSource(TextSource):
