@@ -3,53 +3,6 @@ import unittest
 from citeline import testing
 
 
-class YearBaseTestCase(unittest.TestCase):
-
-    def setUp(self):
-        from ..locale import Year
-        self.year = Year()
-
-
-class YearUnitTestCase(YearBaseTestCase):
-
-    layer = testing.layers.UnitTestLayer
-
-    def tearDown(self):
-        self.year = None
-
-    def test_full_is_read_only(self):
-        """Year.full is read-only
-        """
-        with self.assertRaises(AttributeError):
-            self.year.full = 1999
-
-    def test_returns_string_with_ace_if_value_positive(self):
-        """Year.full returns a string (e.g. `1999`)
-        """
-        self.year.value = 1999
-        self.assertEqual(self.year.full, '1999 A.C.E.')
-
-    def test_returns_string_with_bce_if_value_negative(self):
-        """Year.full returns a string (e.g. `1999`)
-        """
-        self.year.value = -400
-        self.assertEqual(self.year.full, '400 B.C.E.')
-
-    def test_serialize_returns_int(self):
-        """Year.serialize() returns an integer representing its value
-        """
-        expected = 1999
-        self.year.value = expected
-        result = self.year.serialize()
-        self.assertEqual(expected, result)
-
-    def test_deserialize_sets_value(self):
-        """Year.deserialize() sets value"""
-        expected = 1999
-        self.year.deserialize(expected)
-        self.assertEqual(expected, self.year.value)
-
-
 class ISBN10FieldUnitTestCase(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer

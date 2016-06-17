@@ -10,8 +10,7 @@ class Organization(utils.IDocument):
     """
 
     name = mongoengine.StringField(required=True, unique=True)
-    established = mongoengine.EmbeddedDocumentField(
-        locale.Year, db_field='est', default=locale.Year)
+    established = mongoengine.IntField()
 
     meta = {'allow_inheritance': True}
 
@@ -19,7 +18,7 @@ class Organization(utils.IDocument):
         return {
             'id': str(self.id) if self.id else None,
             'name': self.name,
-            'established': self.established.value
+            'established': self.established
         }
 
 

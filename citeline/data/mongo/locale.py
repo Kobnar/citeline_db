@@ -6,30 +6,6 @@ from citeline.data import validators
 from . import utils
 
 
-class Year(utils.IEmbeddedDocument):
-    """
-    A representation of a single year.
-    """
-
-    value = mongoengine.IntField(db_field='value')
-
-    @property
-    def full(self):
-        """
-        The full academic representation of the year (e.g. "400 B.C.E.")
-        """
-        if self.value < 0:
-            return str(abs(self.value)) + ' B.C.E.'
-        else:
-            return str(self.value) + ' A.C.E.'
-
-    def _serialize(self, fields):
-        return int(self.value) if self.value else None
-
-    def _deserialize(self, data):
-        self.value = data
-
-
 class ISBN10Field(mongoengine.StringField):
     """
     An ISBN-10 string.

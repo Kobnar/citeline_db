@@ -258,8 +258,8 @@ class PersonUnitTestCase(PersonBaseTestCase):
             person.name.title = p['name']['title']
             person.name.full = p['name']['full']
             person.description = p['description']
-            person.birth.value = p['birth']
-            person.death.value = p['death']
+            person.birth = p['birth']
+            person.death = p['death']
             result = person.serialize()
             self.assertEqual(p, result)
 
@@ -284,8 +284,8 @@ class PersonUnitTestCase(PersonBaseTestCase):
         self.person.name.title = person_dict['name']['title']
         self.person.name.full = person_dict['name']['full']
         self.person.description = person_dict['description']
-        self.person.birth.value = person_dict['birth']
-        self.person.death.value = person_dict['death']
+        self.person.birth = person_dict['birth']
+        self.person.death = person_dict['death']
         result = self.person.serialize()
         self.assertEqual(person_dict, result)
 
@@ -310,8 +310,8 @@ class PersonUnitTestCase(PersonBaseTestCase):
         self.person.name.title = person_dict['name']['title']
         self.person.name.full = person_dict['name']['full']
         self.person.description = person_dict['description']
-        self.person.birth.value = person_dict['birth']
-        self.person.death.value = person_dict['death']
+        self.person.birth = person_dict['birth']
+        self.person.death = person_dict['death']
         expected = {
             'name': {'full': 'John Doe'},
             'description': 'Nobody knows who he is.'
@@ -333,8 +333,8 @@ class PersonUnitTestCase(PersonBaseTestCase):
             self.assertEqual(person.name.middle, p['name']['middle'])
             self.assertEqual(person.name.last, p['name']['last'])
             self.assertEqual(person.description, p['description'])
-            self.assertEqual(person.birth.value, p['birth'])
-            self.assertEqual(person.death.value, p['death'])
+            self.assertEqual(person.birth, p['birth'])
+            self.assertEqual(person.death, p['death'])
 
 
 class PersonIntegrationTestCase(PersonBaseTestCase):

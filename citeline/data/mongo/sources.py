@@ -62,8 +62,7 @@ class BookSource(TextSource):
 
     edition = mongoengine.StringField()
     publisher = mongoengine.ReferenceField(orgs.Publisher)
-    published = mongoengine.EmbeddedDocumentField(
-        locale.Year, default=locale.Year)
+    published = mongoengine.IntField()
     location = mongoengine.StringField()
     isbn10 = locale.ISBN10Field(unique=True, sparse=True)
     isbn13 = locale.ISBN13Field(unique=True, sparse=True)
@@ -73,7 +72,7 @@ class BookSource(TextSource):
         source.update({
             'edition': self.edition,
             'publisher': str(self._data['publisher'].id),
-            'published': self.published.value,
+            'published': self.published,
             'location': self.location,
             'isbn10': self.isbn10,
             'isbn13': self.isbn13

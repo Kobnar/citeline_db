@@ -29,7 +29,7 @@ class OrganizationUnitTestLayer(OrganizationBaseTestLayer):
         org_name = 'South Sea Company'
         org_est = 1720
         self.org.name = org_name
-        self.org.established.value = org_est
+        self.org.established = org_est
         expected = {
             'id': None,
             'name': org_name,
@@ -47,7 +47,7 @@ class OrganizationUnitTestLayer(OrganizationBaseTestLayer):
             'established': est}
         self.org.deserialize(data)
         self.assertEqual(name, self.org.name)
-        self.assertEqual(est, self.org.established.value)
+        self.assertEqual(est, self.org.established)
 
 
 class OrganizationIntegrationTestLayer(OrganizationBaseTestLayer):

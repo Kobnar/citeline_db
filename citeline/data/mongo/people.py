@@ -94,14 +94,14 @@ class Person(utils.IDocument):
 
     name = mongoengine.EmbeddedDocumentField(Name, required=True, default=Name)
     description = mongoengine.StringField(db_field='desc')
-    birth = mongoengine.EmbeddedDocumentField(locale.Year, default=locale.Year)
-    death = mongoengine.EmbeddedDocumentField(locale.Year, default=locale.Year)
+    birth = mongoengine.IntField()
+    death = mongoengine.IntField()
 
     def _serialize(self, fields):
         return {
             'id': str(self.id) if self.id else None,
             'name': self.name.serialize(fields.get('name')),
             'description': self.description,
-            'birth': self.birth.value,
-            'death': self.death.value,
+            'birth': self.birth,
+            'death': self.death,
         }
