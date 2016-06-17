@@ -21,6 +21,10 @@ def orgs():
     return _load_db_data('organizations')
 
 
+def text_sources():
+    return _load_db_data('text_sources')
+
+
 def _load_validation_data(key):
     test_data = _load_json_file('validation.json')
     return test_data[key]

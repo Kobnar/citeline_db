@@ -58,5 +58,12 @@
             "name": "Roland-Kjos Publishing",
             "estbalished": 2013
         }
+    ],
+    "text_sources": [
+        {
+            "title": "Test TextSource",
+            "description": null,
+            "authors": []
+        }
     ]
 }
