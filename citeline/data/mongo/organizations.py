@@ -26,3 +26,12 @@ class Publisher(Organization):
     """
     A publisher (e.g. "Random House").
     """
+
+    region = mongoengine.StringField(max_length=2)
+
+    def _serialize(self, fields):
+        org = super()._serialize(fields)
+        org.update({
+            'region': self.region
+        })
+        return org

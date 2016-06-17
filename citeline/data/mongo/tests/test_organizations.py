@@ -72,3 +72,32 @@ class OrganizationIntegrationTestLayer(OrganizationBaseTestLayer):
         from mongoengine import NotUniqueError
         with self.assertRaises(NotUniqueError):
             org_2.save()
+
+
+class PublisherBaseTestLayer(unittest.TestCase):
+
+    def setUp(self):
+        from ..organizations import Publisher
+        self.publisher = Publisher()
+
+
+class PublisherUnitTestLayer(PublisherBaseTestLayer):
+
+    layer = testing.layers.UnitTestLayer
+
+    def test_serialize_returns_region(self):
+        """Publisher.serialize() returns dict containing correct region data
+        """
+        name = 'Random House'
+        est = 1922
+        region = 'US'
+        self.publisher.name = name
+        self.publisher.established = est
+        self.publisher.region = region
+        expected = {
+            'id': None,
+            'name': name,
+            'established': est,
+            'region': region}
+        result = self.publisher.serialize()
+        self.assertEqual(expected, result)
