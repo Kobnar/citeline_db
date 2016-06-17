@@ -1,43 +1,86 @@
 from .exceptions import ValidationError
 
 
-def _validate_isbn10(digits):
+def _tokenize_isbn(isbn):
     """
-    Validates an ISBN-10 by checking its check code.
+    Converts a string representation of an ISBN into a list of digits.
 
-    :param list digits: A list of 10 digits
-    :return bool: ``True`` if ``digits`` is a valid ISBN-10, ``False`` if not
+    :param isbn: A string formatted ISBN-10 or ISBN-13
+    :return: A list formatted ISBN-10 or ISBN-13
     """
+
+    digits = []
+    for digit in isbn:
+        try:
+            digits.append(int(digit))
+        except ValueError:
+            if digit is 'X':
+                digits.append(10)
+    return digits
+
+
+def _calc_isbn10_check_digit(digits):
+    """
+    Calculates a valid check digit for the first nine digits of an ISBN-10.
+
+    :param digits: A list containing the first nine digits of an ISBN-10
+    :return: A valid ISBN-13 check digit
+    """
+
     val = 0
     for idx, dgt in enumerate(digits):
         val += ((idx + 1) * dgt)
-    if not val % 11:
-        return True
-    else:
-        return False
+    return val % 11
 
 
-def _validate_isbn13(digits):
+def _calc_isbn13_check_digit(digits):
     """
-    Validates an ISBN-13 by checking its check code.
+    Calculates a valid check digit for the first twelve digits of an ISBN-13.
 
-    :param list digits: A list of 13 digits
-    :return bool: ``True`` if ``digits`` is a valid ISBN-13, ``False`` if not
+    :param digits: A list containing the first twelve digits of an ISBN-13
+    :return: A valid ISBN-13 check digit
     """
-    check_digit = digits.pop(-1)
+
     val = 0
     for idx, dgt in enumerate(digits):
         if not idx % 2:
             val += (dgt * 1)
         else:
             val += (dgt * 3)
-    rmndr = val % 10
-    if rmndr == 0:
-        rmndr = 10
-    if 10 - rmndr == check_digit:
-        return True
-    else:
-        return False
+    r = val % 10
+    if r == 0:
+        r = 10
+    return 10 - r
+
+
+def validate_isbn10(isbn10):
+    """
+    Validates an ISBN-10 by evaluating its check digit.
+
+    :param str isbn10: A string-formatted ISBN-10
+    :return str: A valid ISBN-10 string or ``None``
+    """
+
+    digits = _tokenize_isbn(isbn10)
+    if len(digits) is 10:
+        check_digit = digits.pop(-1)
+        if check_digit is _calc_isbn10_check_digit(digits):
+            return isbn10.replace('-', '')
+
+
+def validate_isbn13(isbn13):
+    """
+    Validates an ISBN-13 by evaluating its check digit.
+
+    :param str isbn13: A string-formatted ISBN-13
+    :return str: A valid ISBN-13 string or ``None``
+    """
+
+    digits = _tokenize_isbn(isbn13)
+    if len(digits) is 13:
+        check_digit = digits.pop(-1)
+        if check_digit is _calc_isbn13_check_digit(digits):
+            return isbn13.replace('-', '')
 
 
 def validate_isbn(isbn):
@@ -45,28 +88,11 @@ def validate_isbn(isbn):
     Validates an ISBN and returns either a validated ISBN string or ``None`` if
     the ISBN is invalid.
 
-    :param str isbn: An ISBN
-    :return: A validated ISBN string or ``None`` if invalid
+    :param str isbn: A string-formatted ISBN-10 or ISBN-13
+    :return str: A valid ISBN string or ``None``
     """
-    if not isinstance(isbn, str):
-        return None
 
-    isbn = isbn.replace('-', '')
-
-    # Handle 'X' check bit
-    digits = [x for x in isbn]
-    if digits[-1] == 'X':
-        digits[-1] = 10
-
-    try:
-        digits = [int(x) for x in digits]
-    except ValueError:
-        return
-
-    if len(digits) == 10 and _validate_isbn10(digits):
-        return isbn
-    if len(digits) == 13 and _validate_isbn13(digits):
-        return isbn
+    return validate_isbn10(isbn) or validate_isbn13(isbn)
 
 
 class ISBNValidator(object):
