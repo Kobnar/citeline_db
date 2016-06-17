@@ -10,7 +10,7 @@ class Citation(utils.IDocument):
     A citation from a specific resource.
     """
 
-    source = mongoengine.ReferenceField(sources.Source)
+    source = mongoengine.ReferenceField(sources.Source, required=True)
     note = mongoengine.StringField()
 
     meta = {'allow_inheritance': True}
@@ -21,6 +21,11 @@ class Citation(utils.IDocument):
             'source': str(self._data['source'].id),
             'note': self.note
         }
+
+    def _deserialize(self, data):
+        super()._deserialize(data)
+        source_id = data.get('source')
+        self.source = sources.Source.objects.get(id=source_id)
 
 
 class TextCitation(Citation):

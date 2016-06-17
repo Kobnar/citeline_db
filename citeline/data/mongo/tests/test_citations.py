@@ -26,6 +26,13 @@ class CitationsIntegrationTestCase(CitationsBaseTestCase):
         Citation.drop_collection()
         super().setUp()
 
+    def test_source_required(self):
+        """Citation.source is a required field
+        """
+        from mongoengine import ValidationError
+        with self.assertRaises(ValidationError):
+            self.citation.validate()
+
     def test_serialize_source(self):
         """
         Citation.serialize() returns an accurately serialized source reference
