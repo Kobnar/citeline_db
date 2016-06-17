@@ -65,5 +65,13 @@
             "description": null,
             "authors": []
         }
+    ],
+    "book_sources": [
+        {
+            "title": "Stryker: The Siege of Sadr City",
+            "description": "The true story of Bull Company during the 2008 Battle of Sadr City.",
+            "isbn13": "978-0985339807",
+            "authors": []
+        }
     ]
 }
