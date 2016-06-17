@@ -30,62 +30,28 @@ class Year(utils.IEmbeddedDocument):
         self.value = data
 
 
-class ISBN(utils.IEmbeddedDocument):
+class ISBN10Field(mongoengine.StringField):
     """
-    An international standard book number (ISBN).
-
-    NOTE: This class requires hyphenation.
+    An ISBN-10 string.
     """
 
-    _isbn10 = mongoengine.StringField(db_field='isbn10')
-    _isbn13 = mongoengine.StringField(db_field='isbn13')
+    def validate(self, value):
+        super().validate(value)
+        if not validators.validate_isbn10(value):
+            msg = '{} is not a valud ISBN-10'
+            self.error(msg.format(value))
 
-    @property
-    def isbn10(self):
-        """
-        A non-formatted ISBN-10 number.
-        """
-        return self._isbn10
 
-    @property
-    def isbn13(self):
-        """
-        A non-formatted ISBN-13 number.
-        """
-        return self._isbn13
+class ISBN13Field(mongoengine.StringField):
+    """
+    An ISBN-13 string.
+    """
 
-    # TODO: Convert from one ISBN to another.
-    def set_isbn(self, value):
-        """
-        Sets a new ISBN value.
-        """
-        if value:
-            isbn = validators.validate_isbn(value)
-            if isbn:
-                length = len(isbn)
-                if length is 10:
-                    self._isbn10 = isbn
-                    # convert isbn10 to isbn13
-                    # set isbn13
-                else:
-                    self._isbn13 = isbn
-                    # convert isbn13 to isbn10
-                    # set isbn10
-            else:
-                raise validators.ValidationError(value)
-        else:
-            self._isbn10 = None
-            self._isbn13 = None
-
-    def _serialize(self, fields):
-        return {
-            'isbn13': self.isbn13,
-            'isbn10': self.isbn10
-        }
-
-    def _deserialize(self, data):
-        isbn = data.get('isbn13') or data.get('isbn10')
-        self.set_isbn(isbn)
+    def validate(self, value):
+        super().validate(value)
+        if not validators.validate_isbn13(value):
+            msg = '{} is not a valud ISBN-13'
+            self.error(msg.format(value))
 
 
 class PageRange(utils.IEmbeddedDocument):

@@ -65,7 +65,8 @@ class BookSource(TextSource):
     published = mongoengine.EmbeddedDocumentField(
         locale.Year, default=locale.Year)
     location = mongoengine.StringField()
-    isbn = mongoengine.EmbeddedDocumentField(locale.ISBN, default=locale.ISBN)
+    isbn10 = locale.ISBN10Field(unique=True, sparse=True)
+    isbn13 = locale.ISBN13Field(unique=True, sparse=True)
 
     def _serialize(self, fields):
         source = super()._serialize(fields)
@@ -74,6 +75,7 @@ class BookSource(TextSource):
             'publisher': str(self._data['publisher'].id),
             'published': self.published.value,
             'location': self.location,
-            'isbn': self.isbn.serialize(fields.get('isbn'))
+            'isbn10': self.isbn10,
+            'isbn13': self.isbn13
         })
         return source

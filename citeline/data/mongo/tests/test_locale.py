@@ -50,98 +50,58 @@ class YearUnitTestCase(YearBaseTestCase):
         self.assertEqual(expected, self.year.value)
 
 
-class ISBNBaseTestCase(unittest.TestCase):
-
-    def setUp(self):
-        from ..locale import ISBN
-        self.isbn = ISBN()
-
-
-class ISBNUnitTestCase(ISBNBaseTestCase):
+class ISBN10FieldUnitTestCase(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    def tearDown(self):
-        self.isbn = None
+    def setUp(self):
+        from ..locale import ISBN10Field
+        self.field = ISBN10Field()
 
-    def test_set_get_isbn10(self):
-        """ISBN.isbn() can get/set an ISBN-10
+    def test_validate_accepts_valid_isbn10s(self):
+        """ISBN10Field.validate() accepts valid ISBN-10 values
         """
-        from citeline.testing import data
-        isbn_10s = data.valid_isbn10s()
-        for isbn in isbn_10s:
-            expected = isbn.replace('-', '')
-            self.isbn.set_isbn(isbn)
-            self.assertEqual(self.isbn.isbn10, expected)
+        from mongoengine import ValidationError
+        for isbn in testing.data.valid_isbn10s():
+            try:
+                self.field.validate(isbn)
+            except ValidationError as err:
+                self.fail(err)
 
-    def test_set_isbn10_sets_isbn13(self):
-        """ISBN.isbn() also sets an ISBN-13 if given an ISBN-10
+    def test_validate_raises_exception_for_invalid_isbns(self):
+        """ISBN10Field.validate() raises ValidationError for invalid ISBNs
         """
-        from citeline.testing import data
-        isbn_10s = data.valid_isbn10s()
-        isbn_13s = data.valid_isbn13s()
-        for idx, isbn in enumerate(isbn_10s):
-            expected = isbn_13s[idx].replace('-', '')
-            self.isbn.set_isbn(isbn)
-            self.assertEqual(self.isbn.isbn13, expected)
+        from mongoengine import ValidationError
+        for isbn in testing.data.invalid_isbns():
+            with self.assertRaises(ValidationError):
+                self.field.validate(isbn)
 
-    def test_set_get_isbn13(self):
-        """ISBN.isbn() can get/set an ISBN-13
+
+class ISBN13FieldUnitTestCase(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..locale import ISBN13Field
+        self.field = ISBN13Field()
+
+    def test_validate_accepts_valid_isbn13s(self):
+        """ISBN13Field.validate() accepts valid ISBN-13 values
         """
-        from citeline.testing import data
-        isbn_13s = data.valid_isbn13s()
-        for isbn in isbn_13s:
-            expected = isbn.replace('-', '')
-            self.isbn.set_isbn(isbn)
-            self.assertEqual(self.isbn.isbn13, expected)
+        from mongoengine import ValidationError
+        for isbn in testing.data.valid_isbn13s():
+            try:
+                self.field.validate(isbn)
+            except ValidationError as err:
+                self.fail(err)
 
-    def test_set_isbn13_sets_isbn10(self):
-        """ISBN.isbn() also sets an ISBN-10 if given an ISBN-13
+    def test_validate_raises_exception_for_invalid_isbns(self):
+        """ISBN13Field.validate() raises ValidationError for invalid ISBNs
         """
-        from citeline.testing import data
-        isbn_10s = data.valid_isbn10s()
-        isbn_13s = data.valid_isbn13s()
-        for idx, isbn in enumerate(isbn_13s):
-            expected = isbn_10s[idx].replace('-', '')
-            self.isbn.set_isbn(isbn)
-            self.assertEqual(self.isbn.isbn10, expected)
-
-    def test_isbn_sets_none_value(self):
-        self.isbn.set_isbn('9780985339890')
-        self.isbn.set_isbn(None)
-        self.assertIsNone(self.isbn.isbn10)
-        self.assertIsNone(self.isbn.isbn13)
-
-    def test_isbn_raises_exception_with_bad_ISBN(self):
-        """ISBN.isbn() raises an exception for an invalid ISBN
-        """
-        from citeline.data import validators
-        with self.assertRaises(validators.ValidationError):
-            self.isbn.set_isbn('bad_isbn')
-
-    def test_serialize_returns_isbns_if_set(self):
-        """ISBN.serialize() returns a pair of ISBNs if they have been set
-        """
-        isbn13 = '9780985339890'
-        isbn10 = '0985339896'
-        self.isbn.set_isbn(isbn13)
-        expected = {
-            'isbn13': isbn13,
-            'isbn10': isbn10}
-        result = self.isbn.serialize()
-        self.assertEqual(expected, result)
-
-    def test_deserialize_sets_isbns(self):
-        """ISBN.deserialize() sets a pair of ISBNs
-        """
-        isbn13 = '9780985339890'
-        isbn10 = '0985339896'
-        data = {
-            'isbn13': isbn13,
-            'isbn10': isbn10}
-        self.isbn.deserialize(data)
-        self.assertEqual(self.isbn.isbn13, isbn13)
-        self.assertEqual(self.isbn.isbn10, isbn10)
+        from mongoengine import ValidationError
+        for isbn in testing.data.invalid_isbns():
+            with self.assertRaises(ValidationError):
+                self.field.validate(isbn)
 
 
 class PageRangeTestCase(unittest.TestCase):

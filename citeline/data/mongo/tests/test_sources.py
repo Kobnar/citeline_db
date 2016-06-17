@@ -163,10 +163,62 @@ class BookSourceIntegrationTestCase(BookSourceBaseTestCase):
         Person.drop_collection()
         super().setUp()
 
+    def test_duplicate_isbn10_raises_exception(self):
+        """BookSource.isbn10 must be a unique field
+        """
+        from ..people import Person
+        from ..sources import BookSource
+        from mongoengine import NotUniqueError
+
+        dup_title = 'Some Other Book'
+        isbn10 = '0985339896'
+        full_name = 'John Nobody Doe'
+
+        author = Person()
+        author.name.full = full_name
+        author.save()
+
+        self.book.isbn10 = isbn10
+        self.book.authors.append(author)
+        self.book.save()
+
+        dup_book = BookSource()
+        dup_book.title = dup_title
+        dup_book.isbn10 = isbn10
+        dup_book.authors.append(author)
+        with self.assertRaises(NotUniqueError):
+            dup_book.save()
+
+    def test_duplicate_isbn13_raises_exception(self):
+        """BookSource.isbn13 must be a unique field
+        """
+        from ..people import Person
+        from ..sources import BookSource
+        from mongoengine import NotUniqueError
+
+        dup_title = 'Some Other Book'
+        isbn13 = '9780985339890'
+        full_name = 'John Nobody Doe'
+
+        author = Person()
+        author.name.full = full_name
+        author.save()
+
+        self.book.isbn13 = isbn13
+        self.book.authors.append(author)
+        self.book.save()
+
+        dup_book = BookSource()
+        dup_book.title = dup_title
+        dup_book.isbn13 = isbn13
+        dup_book.authors.append(author)
+        with self.assertRaises(NotUniqueError):
+            dup_book.save()
+
     def test_serialize_formats_correctly(self):
         """BookSource.serialize() returns a properly formatted dictionary
         """
-        isbn = '9780985339890'
+        isbn13 = '9780985339890'
 
         from ..organizations import Publisher
         publisher = Publisher()
@@ -180,7 +232,7 @@ class BookSourceIntegrationTestCase(BookSourceBaseTestCase):
 
         self.book.authors.append(author)
         self.book.publisher = publisher
-        self.book.isbn.set_isbn(isbn)
+        self.book.isbn13 = isbn13
 
         expected = {
             'id': None,
@@ -193,10 +245,8 @@ class BookSourceIntegrationTestCase(BookSourceBaseTestCase):
             'publisher': str(publisher.id),
             'published': None,
             'location': None,
-            'isbn': {
-                'isbn10': '0985339896',
-                'isbn13': '9780985339890'
-            }}
+            'isbn10': None,
+            'isbn13': '9780985339890'}
 
         result = self.book.serialize()
         self.assertEqual(expected, result)
