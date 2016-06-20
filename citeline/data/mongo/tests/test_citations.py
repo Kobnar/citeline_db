@@ -52,6 +52,20 @@ class CitationsIntegrationTestCase(CitationsBaseTestCase):
         result = self.citation.serialize()
         self.assertEqual(expected, result)
 
+    def test_deserialize_sets_source(self):
+        """Citation.deserialize() sets the correct source
+        """
+        from ..sources import Source
+        source = Source()
+        source.title = 'Test Source'
+        source.save()
+
+        expected = source.id
+        data = {'source': str(expected)}
+        self.citation.deserialize(data)
+        result = self.citation.source.id
+        self.assertEqual(expected, result)
+
 
 class TextCitationsBaseTestCase(unittest.TestCase):
 
@@ -133,4 +147,13 @@ class BookCitationsIntegrationTestCase(BookCitationsBaseTestCase):
             'pages': (123, 124)}
 
         result = self.citation.serialize()
+        self.assertEqual(expected, result)
+
+    def test_deserialize_sets_pages(self):
+        """BookCitation.deserialize() sets pages correctly
+        """
+        expected = (12, 13)
+        data = {'pages': [12, 13]}
+        self.citation.deserialize(data)
+        result = self.citation.pages.range
         self.assertEqual(expected, result)

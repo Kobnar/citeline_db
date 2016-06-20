@@ -25,7 +25,8 @@ class Citation(utils.IDocument):
     def _deserialize(self, data):
         super()._deserialize(data)
         source_id = data.get('source')
-        self.source = sources.Source.objects.get(id=source_id)
+        if source_id:
+            self.source = sources.Source.objects.get(id=source_id)
 
 
 class TextCitation(Citation):
