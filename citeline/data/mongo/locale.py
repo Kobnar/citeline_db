@@ -98,3 +98,6 @@ class PageRange(utils.IEmbeddedDocument):
 
     def _serialize(self, fields):
         return self.start, self.end
+
+    def _deserialize(self, data):
+        self.range = data

@@ -57,7 +57,3 @@ class BookCitation(TextCitation):
             'pages': self.pages.range,
         })
         return source
-
-    def _deserialize(self, data):
-        self.pages.range = data.pop('pages')
-        super()._deserialize(data)
