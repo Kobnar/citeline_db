@@ -248,13 +248,14 @@ class UserIntegrationTestCase(UserBaseTestCase):
         result = auth.User.authenticate(self.user.email, 'T3stPa$$word')
         self.assertEqual(self.user, result)
 
-    def test_authenticate_incorrect_password_returns_none(self):
+    def test_authenticate_incorrect_password_raises_exception(self):
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
         self.user.save()
         from .. import auth
-        result = auth.User.authenticate(self.user.email, 'B4dPa$$word')
-        self.assertIsNone(result)
+        from ..exceptions import AuthenticationError
+        with self.assertRaises(AuthenticationError):
+            auth.User.authenticate(self.user.email, 'B4dPa$$word')
 
     def test_serialize_returns_correct_dict(self):
         self.maxDiff = None

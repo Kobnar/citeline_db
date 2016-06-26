@@ -4,3 +4,4 @@ from . import organizations
 from . import people
 from . import sources
 from . import utils
+from . import exceptions

@@ -10,6 +10,7 @@ from citeline.data import validators
 from citeline.data.json import auth
 
 from . import utils
+from . import exceptions
 
 
 class User(utils.IDocument):
@@ -99,6 +100,8 @@ class User(utils.IDocument):
         user = User.objects.get(email=email)
         if user.check_password(password):
             return user
+        else:
+            raise exceptions.AuthenticationError()
 
     @staticmethod
     def _new_salt():
@@ -195,6 +198,6 @@ class Token(mongoengine.Document, utils.ISerializable):
                     'id': str(self.user.id) if self.user.id else None,
                     'groups': self.user.groups
                 } if self.user else {},
-                'issued': self.issued,
-                'touched': self.touched
+                'issued': str(self.issued),
+                'touched': str(self.touched)
             }
