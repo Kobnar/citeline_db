@@ -9,6 +9,7 @@ with open(os.path.join(here, 'CHANGES.md')) as f:
 
 requires = [
     'bcrypt',
+    'blinker',
     'mongoengine',
     'nose2[coverage-plugin]',
 ]
