@@ -5,7 +5,7 @@ import mongoengine
 from citeline import testing
 
 
-def make_test_user(email, password=None, clean=True, save=False):
+def make_user(email, password=None, clean=True, save=False):
     from .. import auth
     user = auth.User(email=email)
     if password:
@@ -15,7 +15,7 @@ def make_test_user(email, password=None, clean=True, save=False):
     return user
 
 
-def make_test_token(user, clean=True, save=False):
+def make_token(user, clean=True, save=False):
     from .. import auth
     token = auth.Token(_user=user)
     if save:
@@ -235,6 +235,11 @@ class UserIntegrationTestCase(UserBaseTestCase):
         with self.assertRaises(mongoengine.NotUniqueError):
             dup_user.save()
 
+    def test_new_does_not_save_if_save_not_set(self):
+        from .. import auth
+        user = auth.User.new('test@email.com', 'T3stPa$$word')
+        self.assertIsNone(user.id)
+
     def test_new_saves_user_and_profile(self):
         from .. import auth
         user = auth.User.new('test@email.com', 'T3stPa$$word', True)
@@ -300,26 +305,29 @@ class UserIntegrationTestCase(UserBaseTestCase):
 class TokenBaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        user = make_test_user('test@email.com')
-        self.api_token = make_test_token(user)
+        pass
 
 
 class TokenUnitTestCase(TokenBaseTestCase):
 
     layer = testing.layers.UnitTestLayer
 
+    def setUp(self):
+        user = make_user('test@email.com')
+        self.api_token = make_token(user)
+
     def test_new_returns_56_char_key(self):
         from .. import auth
-        result = auth.Token.new_key()
+        result = auth.Token.gen_key()
         self.assertEqual(56, len(result))
 
     def test_key_is_readonly(self):
         with self.assertRaises(AttributeError):
-            self.api_token.key = self.api_token.new_key()
+            self.api_token.key = self.api_token.gen_key()
 
     def test_user_is_readonly(self):
         with self.assertRaises(AttributeError):
-            self.api_token.user = make_test_user('test@email.com')
+            self.api_token.user = make_user('test@email.com')
 
     def test_issued_is_readonly(self):
         from datetime import datetime
@@ -363,6 +371,23 @@ class TokenUnitTestCase(TokenBaseTestCase):
             self.assertNotEqual(expected, result)
             expected = result
 
+    def test_touch_updates_touched(self):
+        self.assertIsNone(self.api_token.touched)
+        self.api_token.touch()
+        self.assertIsNotNone(self.api_token.touched)
+
+    def test_invalid_key_raises_exception(self):
+        from datetime import datetime
+        from ..auth import Token
+        from mongoengine import ValidationError
+        user = self.api_token.user
+        invalid_token = Token(
+            _user=user,
+            _key='A bad token',
+            _issued=datetime.utcnow())
+        with self.assertRaises(ValidationError):
+            invalid_token.validate()
+
 
 class TokenIntegrationTestCase(TokenBaseTestCase):
 
@@ -372,7 +397,20 @@ class TokenIntegrationTestCase(TokenBaseTestCase):
         from .. import auth
         auth.User.drop_collection()
         auth.Token.drop_collection()
-        super().setUp()
+        user = auth.User.new('test@email.com', 'T3stPa$$word')
+        self.api_token = auth.Token.new(user)
+
+    def test_new_saves_token_to_mongo(self):
+        from .. import auth
+        import mongoengine
+        user = self.api_token.user
+        user.save()
+        key = auth.Token.new(user, save=True).key
+        try:
+            auth.Token.objects.get(_key=key)
+        except mongoengine.DoesNotExist as err:
+            msg = 'Unexpected exception raised: {}'
+            self.fail(msg.format(err))
 
     def test_serialize_returns_accurate_dict(self):
         self.api_token.clean()
@@ -382,19 +420,17 @@ class TokenIntegrationTestCase(TokenBaseTestCase):
                 'id': None,
                 'groups': ['users']
             },
-            'issued': self.api_token.issued,
-            'touched': self.api_token.touched
+            'issued': str(self.api_token.issued),
+            'touched': str(self.api_token.touched)
         }
         result = self.api_token.serialize()
         self.assertEqual(expected, result)
 
-    def test_serialize_with_no_dereference(self):
+    def test_serialized_performs_zero_queries(self):
         from mongoengine import context_managers
-        from .. import auth
-        self.api_token.user.set_password('T3stPa$$word')
         self.api_token.user.save()
         self.api_token.save()
-        new_token = auth.Token.objects.get(_key=self.api_token.key)
-        with context_managers.query_counter() as q:
-            new_token.serialize()
-            self.assertEqual(0, q)
+        expected = 0
+        with context_managers.query_counter() as result:
+            self.api_token.serialize()
+            self.assertEqual(expected, result)

@@ -155,8 +155,15 @@ class Token(mongoengine.Document, utils.ISerializable):
     _touched = mongoengine.DateTimeField(db_field='touched', required=True)
 
     @staticmethod
-    def new_key():
+    def gen_key():
         return hashlib.sha224(os.urandom(128)).hexdigest()
+
+    @classmethod
+    def new(cls, user, save=False):
+        token = cls(_user=user)
+        if save:
+            token.save()
+        return token
 
     @property
     def key(self):
@@ -174,12 +181,15 @@ class Token(mongoengine.Document, utils.ISerializable):
     def touched(self):
         return self._touched
 
+    def touch(self):
+        self._touched = datetime.utcnow()
+        return self.touched
+
     def clean(self):
-        now = datetime.utcnow()
+        now = self.touch()
         if not self.key:
-            self._key = self.new_key()
+            self._key = self.gen_key()
             self._issued = now
-        self._touched = now
 
     meta = {
         'indexes': [
