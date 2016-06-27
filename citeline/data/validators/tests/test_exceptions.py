@@ -7,26 +7,15 @@ class ValidationErrorTests(unittest.TestCase):
 
     layer = testing.layers.UnitTestLayer
 
-    def test_default_msg(self):
-        """ValidationError.__init__() sets a default `msg` string
-        """
+    def test_default_message(self):
         from ..exceptions import ValidationError
-        exception = ValidationError()
-        self.assertIsNotNone(exception.message)
-        self.assertIsInstance(exception.message, str)
+        expected = 'Validation failed'
+        error = ValidationError()
+        result = error.message
+        self.assertEqual(expected, result)
 
-    def test_msg_set(self):
-        """ValidationError.__init__() can set a custom `msg` string
-        """
-        msg = 'Custom validation error message.'
+    def test_original_error_set(self):
         from ..exceptions import ValidationError
-        exception = ValidationError(msg)
-        self.assertEqual(exception.message, msg)
-
-    def test_as_string(self):
-        """ValidationError.__init__() can set a custom `msg` string (as string)
-        """
-        msg = 'Custom validation error message.'
-        from ..exceptions import ValidationError
-        exception = ValidationError(msg)
-        self.assertEqual(str(exception), msg)
+        orig_error = KeyError('Some key is invalid')
+        error = ValidationError(original_error=orig_error)
+        self.assertEqual(orig_error, error.original_error)

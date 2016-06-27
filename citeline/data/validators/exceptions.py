@@ -1,12 +1,13 @@
-class ValidationError(Exception):
+from citeline.base import exceptions as exc
+
+
+class ValidationError(exc.CiteLineError):
     """
-    A custom exception used during aggressive document-level property
-    validation.
+    A custom exception raised when data fails validation.
     """
+
+    _DEFAULT_MESSAGE = 'Validation failed'
 
     def __init__(self, message='', original_error=None):
-        self.message = message
+        super().__init__(message)
         self.original_error = original_error
-
-    def __str__(self):
-        return self.message
