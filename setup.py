@@ -11,7 +11,8 @@ requires = [
     'bcrypt',
     'blinker',
     'mongoengine',
-    'nose2[coverage-plugin]',
+    'nose2',
+    'cov-core'
 ]
 
 setup(
