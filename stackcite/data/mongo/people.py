@@ -1,6 +1,7 @@
 import mongoengine
 
-from . import locale
+from stackcite.data.json import people
+
 from . import utils
 
 
@@ -14,6 +15,8 @@ class Name(utils.IEmbeddedDocument):
     middle = mongoengine.StringField()
     last = mongoengine.StringField(required=True)
     _full = mongoengine.StringField(db_field='full', required=True, unique=True)
+    prefixes = mongoengine.ListField(mongoengine.StringField(), default=[])
+    suffixes = mongoengine.ListField(mongoengine.StringField(), default=[])
 
     @property
     def full(self):
@@ -29,7 +32,10 @@ class Name(utils.IEmbeddedDocument):
 
         (This is a required field.)
         """
-        return ' '.join([x for x in (self.first, self.middle, self.last) if x])
+        prefix = ' '.join([p for p in self.prefixes])
+        suffix = ' '.join([s for s in self.suffixes])
+        name_chunks = (prefix, self.first, self.middle, self.last, suffix)
+        return ' '.join([x for x in name_chunks if x])
 
     @full.setter
     def full(self, value):
@@ -41,6 +47,8 @@ class Name(utils.IEmbeddedDocument):
         self.first = names.get('first')
         self.middle = names.get('middle')
         self.last = names['last']
+        self.prefixes = names.get('prefixes')
+        self.suffixes = names.get('suffixes')
 
     @staticmethod
     def _parse_name(name):
@@ -50,10 +58,26 @@ class Name(utils.IEmbeddedDocument):
         :param name: A name string
         :return: A 3-tuple (first, middle, last)
         """
-        # TODO: Parse prefixes and suffixes
-        name = name.split()
+        # TODO: Parse prefixes and suffixes.json
+        name_chunks = name.split()
+        name_dict = dict()
+
+        # extract prefixes and suffixes
+        prefixes = list()
+        suffixes = list()
+        name = list()
+        for chunk in name_chunks:
+            if chunk in people.PREFIXES:
+                prefixes.append(chunk)
+            elif chunk in people.SUFFIXES:
+                suffixes.append(chunk)
+            else:
+                name.append(chunk)
+        name_dict['prefixes'] = prefixes
+        name_dict['suffixes'] = suffixes
+
+        # Parse names
         name_cnt = len(name)
-        name_dict = {}
         if name_cnt == 1:
             name_dict['last'] = name[0]
         elif name_cnt == 2:
@@ -83,7 +107,9 @@ class Name(utils.IEmbeddedDocument):
             'first': self.first,
             'middle': self.middle,
             'last': self.last,
-            'full': self.full
+            'full': self.full,
+            'prefixes': self.prefixes,
+            'suffixes': self.suffixes
         }
 
 

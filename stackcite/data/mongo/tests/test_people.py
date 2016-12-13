@@ -133,25 +133,53 @@ class NameUnitTestCase(NameBaseTestCase):
     def test_full_setter_catches_known_prefixes(self):
         """Name.full setter catches known prefixes
         """
-        name = 'John Nobdoy Doe'
-        prefixes = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Miss']
+        from ..people import Name
+        name = 'John Nobody Doe'
+        prefixes = ['Dr.', 'Mr.', 'Ms.', 'Mrs.', 'Miss', 'Sir']
         for prefix in prefixes:
             case = ' '.join([prefix, name])
-        self.fail()
+            name_obj = Name()
+            name_obj.full = case
+            expected = [prefix]
+            result = name_obj.serialize()['prefixes']
+            self.assertEqual(expected, result)
 
     def test_full_setter_catches_known_suffixes(self):
-        """Name.full setter catches known suffixes
+        """Name.full setter catches known suffixes.json
         """
-        name = 'John Nobdoy Doe'
-        suffixes = ['Jr.', 'Sr.', 'I', 'II', 'IIII']
+        from ..people import Name
+        name = 'John Nobody Doe'
+        suffixes = ['Jr.', 'Sr.', 'I', 'II', 'IV', 'V']
         for suffix in suffixes:
             case = ' '.join([name, suffix])
-        self.fail()
+            name_obj = Name()
+            name_obj.full = case
+            expected = [suffix]
+            result = name_obj.serialize()['suffixes']
+            self.assertEqual(expected, result)
+
+    def test_full_setter_catches_multiple_known_prefixes(self):
+        """Name.full setter catches multiple known prefixes
+        """
+        name = 'Sir Dr. John Nobody Doe'
+        self.name.full = name
+        expected = ['Sir', 'Dr.']
+        result = self.name.prefixes
+        self.assertEqual(expected, result)
+
+    def test_full_setter_catches_multiple_known_suffixes(self):
+        """Name.full setter catches multiple known suffixes
+        """
+        name = 'John Nobody Doe Esq. III'
+        self.name.full = name
+        expected = ['Esq.', 'III']
+        result = self.name.suffixes
+        self.assertEqual(expected, result)
 
     def test_full_setter_does_not_set_title(self):
         """Name.full does not set a new title
         """
-        self.name.full = 'John Nobdoy Doe'
+        self.name.full = 'John Nobody Doe'
         self.assertIsNone(self.name.title)
 
     def test_serialize_formats_correctly(self):
@@ -175,7 +203,10 @@ class NameUnitTestCase(NameBaseTestCase):
             'first': None,
             'middle': None,
             'last': 'Doe',
-            'full': 'Doe'}
+            'full': 'Doe',
+            'prefixes': [],
+            'suffixes': []
+        }
         result = self.name.serialize()
         self.assertEqual(expected, result)
 
@@ -209,6 +240,16 @@ class NameUnitTestCase(NameBaseTestCase):
         self.name.title = title
         self.name.clean()
         self.assertEqual(self.name.title, title)
+
+    def test_prefixes_default_empty_list(self):
+        """Name.prefixes defaults to an empty list
+        """
+        self.assertEqual([], self.name.prefixes)
+
+    def test_suffixes_default_empty_list(self):
+        """Name.suffixes defaults to an empty list
+        """
+        self.assertEqual([], self.name.suffixes)
 
 
 class PersonBaseTestCase(unittest.TestCase):
@@ -275,6 +316,8 @@ class PersonUnitTestCase(PersonBaseTestCase):
                 'middle': None,
                 'last': 'Doe',
                 'full': 'John Doe',
+                'prefixes': [],
+                'suffixes': []
             },
             'description': 'Nobody knows who he is.',
             'birth': None,
