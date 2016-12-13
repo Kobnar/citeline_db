@@ -16,14 +16,14 @@ requires = [
 ]
 
 setup(
-    name='CiteLine Database',
+    name='Stackcite Database Schema',
     version='0.0',
-    description='A database library for CiteLine services',
+    description='A database library for Stackcite services',
     long_description=README + '\n\n' + CHANGES,
     author='Konrad R.K. Ludwig',
     author_email='konrad.rk.ludwig@gmail.com',
     url='http://www.konradrkludwig.com/',
-    packages=['citeline'],
-    package_data={'citeline': ['json/*.json', 'testing/data/*.json']},
+    packages=['stackcite'],
+    package_data={'stackcite': ['json/*.json', 'testing/data/*.json']},
     install_requires=requires
 )
