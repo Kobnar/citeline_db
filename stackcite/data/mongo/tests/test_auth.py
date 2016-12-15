@@ -322,34 +322,48 @@ class TokenUnitTestCase(TokenBaseTestCase):
         self.assertEqual(56, len(result))
 
     def test_key_is_readonly(self):
+        """Token.key field is read-only
+        """
         with self.assertRaises(AttributeError):
             self.api_token.key = self.api_token.gen_key()
 
     def test_user_is_readonly(self):
+        """Token.user field is read-only
+        """
         with self.assertRaises(AttributeError):
             self.api_token.user = make_user('test@email.com')
 
     def test_issued_is_readonly(self):
+        """Token.issued field is read-only
+        """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.api_token.issued = datetime.utcnow()
 
     def test_touched_is_readonly(self):
+        """Token.touched field is read-only
+        """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.api_token.touched = datetime.utcnow()
 
     def test_key_set_on_clean(self):
+        """Token.clean() sets Token.key field
+        """
         self.assertIsNone(self.api_token.key)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.key)
 
     def test_issued_set_on_clean(self):
+        """Token.clean() sets Token.issued field
+        """
         self.assertIsNone(self.api_token.issued)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.issued)
 
     def test_issued_static_on_clean(self):
+        """Token.clean() does not change Token.issued field
+        """
         self.api_token.clean()
         expected = self.api_token.issued
         for _ in range(5):
@@ -358,25 +372,34 @@ class TokenUnitTestCase(TokenBaseTestCase):
             self.assertEqual(expected, result)
 
     def test_touched_set_on_clean(self):
+        """Token.clean() sets Token.touched field
+        """
         self.assertIsNone(self.api_token.touched)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.touched)
 
     def test_touched_updates_on_clean(self):
+        """Token.clean() updates Token.touched field with a different value
+        """
+        from time import sleep
         self.api_token.clean()
         expected = self.api_token.touched
         for _ in range(5):
+            sleep(0.5)
             self.api_token.clean()
             result = self.api_token.touched
             self.assertNotEqual(expected, result)
-            expected = result
 
     def test_touch_updates_touched(self):
+        """Token.touch() sets Token.touched field
+        """
         self.assertIsNone(self.api_token.touched)
         self.api_token.touch()
         self.assertIsNotNone(self.api_token.touched)
 
     def test_invalid_key_raises_exception(self):
+        """Token() raises exception for invalid key string
+        """
         from datetime import datetime
         from ..auth import Token
         from mongoengine import ValidationError
