@@ -67,16 +67,18 @@ class UserUnitTestCase(UserBaseTestCase):
             self.user.groups = ['users', 'admins']
 
     def test_add_group_adds_valid_group(self):
+        from stackcite.data.json import auth
         try:
-            self.user.add_group('staff')
+            self.user.add_group(auth.STAFF)
         except ValueError as err:
             msg = 'Unexpected exception raised: {}'
             self.fail(msg.format(err))
 
     def test_remove_group_removes_valid_group(self):
+        from stackcite.data.json import auth
         self.user.add_group('staff')
         try:
-            self.user.remove_group('staff')
+            self.user.remove_group(auth.STAFF)
         except ValueError as err:
             msg = 'Unexpected exception raised: {}'
             self.fail(msg.format(err))
@@ -275,7 +277,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
         expected = {
             'id': str(user_id),
             'email': 'test@email.com',
-            'groups': [auth.GROUPS[0][0]],
+            'groups': [auth.USERS],
             'joined': str(self.user.joined),
             'last_login': str(last_login),
         }
@@ -296,7 +298,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
         expected = {
             'id': str(user_id),
             'email': self.user.email,
-            'groups': [auth.GROUPS[0][0]],
+            'groups': [auth.USERS],
             'last_login': str(last_login)
         }
         result = self.user.serialize(fields)

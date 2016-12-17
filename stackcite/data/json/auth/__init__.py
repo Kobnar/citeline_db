@@ -1,4 +1,8 @@
 from stackcite.data.json import utils
 
 
-GROUPS = utils.load_data('auth/groups.json')
+GROUP_CHOICES = utils.load_data('auth/groups.json')
+
+GROUPS = [k for k, v in GROUP_CHOICES]
+
+USERS, STAFF, ADMIN = GROUPS

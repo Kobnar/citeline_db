@@ -18,13 +18,12 @@ class User(utils.IDocument):
     A user account.
     """
 
-    GROUPS = auth.GROUPS
-    DEFAULT_GROUPS = [auth.GROUPS[0][0]]
+    DEFAULT_GROUPS = [auth.USERS]
 
     email = mongoengine.EmailField(required=True, unique=True)
 
     _groups = mongoengine.ListField(
-        mongoengine.StringField(choices=GROUPS),
+        mongoengine.StringField(choices=auth.GROUP_CHOICES),
         db_field='groups', required=True, default=DEFAULT_GROUPS)
     _joined = mongoengine.DateTimeField(db_field='created', required=True)
     _last_login = mongoengine.DateTimeField(db_field='last_login')

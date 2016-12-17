@@ -10,7 +10,7 @@ def validate_group(group):
 
     :param str group: A group name string.
     """
-    if group in [g for g, n in auth.GROUPS]:
+    if group in auth.GROUPS:
         return group
 
 
