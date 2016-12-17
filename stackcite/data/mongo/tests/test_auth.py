@@ -82,7 +82,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.fail(msg.format(err))
 
     def test_add_group_raises_exception_for_invalid_group(self):
-        with self.assertRaises(ValueError):
+        from stackcite.data import validators
+        with self.assertRaises(validators.ValidationError):
             self.user.add_group('invalid')
 
     def test_remove_group_raises_exception_if_not_in_group(self):

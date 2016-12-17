@@ -32,6 +32,7 @@ class User(utils.IDocument):
     _salt = mongoengine.StringField(required=True)
     _hash = mongoengine.StringField(required=True)
 
+    _validate_group = validators.GroupValidator()
     _validate_password = validators.PasswordValidator()
 
     @property
@@ -39,11 +40,8 @@ class User(utils.IDocument):
         return self._groups
 
     def add_group(self, group):
-        if group in [g[0] for g in auth.GROUPS]:
-            self._groups.append(group)
-        else:
-            msg = '"{}" is not a valid group'
-            raise ValueError(msg.format(group))
+        self._validate_group(group)
+        self._groups.append(group)
 
     def remove_group(self, group):
         idx = self._groups.index(group)
