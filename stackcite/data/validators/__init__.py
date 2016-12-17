@@ -1,4 +1,5 @@
 from .exceptions import ValidationError
+from .groups import GroupValidator
 from .isbns import validate_isbn, validate_isbn10, validate_isbn13, \
     ISBNValidator
 from .keys import KeyValidator
