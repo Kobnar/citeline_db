@@ -40,7 +40,8 @@ class User(utils.IDocument):
 
     def add_group(self, group):
         self._validate_group(group)
-        self._groups.append(group)
+        if group not in self.groups:
+            self._groups.append(group)
 
     def remove_group(self, group):
         idx = self._groups.index(group)

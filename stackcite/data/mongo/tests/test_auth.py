@@ -74,6 +74,13 @@ class UserUnitTestCase(UserBaseTestCase):
             msg = 'Unexpected exception raised: {}'
             self.fail(msg.format(err))
 
+    def test_add_group_does_not_add_duplicate_group(self):
+        from stackcite.data.json import auth
+        self.user.add_group(auth.USERS)
+        expected = [auth.USERS]
+        result = self.user.groups
+        self.assertEqual(expected, result)
+
     def test_remove_group_removes_valid_group(self):
         from stackcite.data.json import auth
         self.user.add_group('staff')
