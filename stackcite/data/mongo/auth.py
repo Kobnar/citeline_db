@@ -1,9 +1,7 @@
 from datetime import datetime
 
 import bcrypt
-import hashlib
 import mongoengine
-import os
 from mongoengine import context_managers
 
 from stackcite.data import validators
@@ -23,8 +21,7 @@ class User(utils.IDocument):
     email = mongoengine.EmailField(required=True, unique=True)
 
     _groups = mongoengine.ListField(
-        mongoengine.StringField(choices=auth.GROUP_CHOICES),
-        db_field='groups', required=True, default=DEFAULT_GROUPS)
+        mongoengine.StringField(choices=auth.GROUP_CHOICES), db_field='groups')
     _joined = mongoengine.DateTimeField(db_field='joined', required=True)
     _last_login = mongoengine.DateTimeField(db_field='last_login')
     _prev_login = mongoengine.DateTimeField(db_field='prev_login')

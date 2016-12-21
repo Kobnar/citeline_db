@@ -73,10 +73,10 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertIn('_salt', invalid_fields)
             self.assertIn('_hash', invalid_fields)
 
-    def test_default_group_set(self):
-        """User.groups sets default groups
+    def test_group_default_is_empty_list(self):
+        """User.groups defaults to an empty list
         """
-        self.assertEqual(self.user.groups, ['users'])
+        self.assertEqual(self.user.groups, [])
 
     def test_groups_is_read_only(self):
         """User.groups is read-only
@@ -355,7 +355,6 @@ class UserIntegrationTestCase(UserBaseTestCase):
         """
         self.maxDiff = None
         import bson
-        from stackcite.data.json import auth
         user_id = self.user.id = bson.ObjectId()
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
@@ -364,7 +363,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
         expected = {
             'id': str(user_id),
             'email': 'test@email.com',
-            'groups': [auth.USERS],
+            'groups': [],
             'joined': str(self.user.joined),
             'last_login': str(last_login),
         }
@@ -376,7 +375,6 @@ class UserIntegrationTestCase(UserBaseTestCase):
         """
         self.maxDiff = None
         import bson
-        from stackcite.data.json import auth
         user_id = self.user.id = bson.ObjectId()
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
@@ -387,7 +385,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
         expected = {
             'id': str(user_id),
             'email': self.user.email,
-            'groups': [auth.USERS],
+            'groups': [],
             'last_login': str(last_login)
         }
         result = self.user.serialize(fields)
@@ -529,7 +527,7 @@ class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
             'key': self.api_token.key,
             'user': {
                 'id': str(self.user.id),
-                'groups': ['users']
+                'groups': []
             },
             'issued': str(self.api_token.issued),
             'touched': str(self.api_token.touched)
