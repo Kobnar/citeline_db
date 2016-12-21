@@ -17,7 +17,7 @@ def make_user(email, password=None, clean=True, save=False):
 
 def make_token(user, clean=True, save=False):
     from .. import auth
-    token = auth.Token(_user=user)
+    token = auth.AuthToken(_user=user)
     if save:
         token.save()
     return token
@@ -312,13 +312,13 @@ class UserIntegrationTestCase(UserBaseTestCase):
         self.assertEqual(expected, result)
 
 
-class TokenBaseTestCase(unittest.TestCase):
+class AuthTokenBaseTestCase(unittest.TestCase):
 
     def setUp(self):
         pass
 
 
-class TokenUnitTestCase(TokenBaseTestCase):
+class AuthTokenUnitTestCase(AuthTokenBaseTestCase):
 
     layer = testing.layers.UnitTestLayer
 
@@ -328,51 +328,51 @@ class TokenUnitTestCase(TokenBaseTestCase):
 
     def test_new_returns_56_char_key(self):
         from .. import auth
-        result = auth.Token.gen_key()
+        result = auth.AuthToken.gen_key()
         self.assertEqual(56, len(result))
 
     def test_key_is_readonly(self):
-        """Token.key field is read-only
+        """AuthToken.key field is read-only
         """
         with self.assertRaises(AttributeError):
             self.api_token.key = self.api_token.gen_key()
 
     def test_user_is_readonly(self):
-        """Token.user field is read-only
+        """AuthToken.user field is read-only
         """
         with self.assertRaises(AttributeError):
             self.api_token.user = make_user('test@email.com')
 
     def test_issued_is_readonly(self):
-        """Token.issued field is read-only
+        """AuthToken.issued field is read-only
         """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.api_token.issued = datetime.utcnow()
 
     def test_touched_is_readonly(self):
-        """Token.touched field is read-only
+        """AuthToken.touched field is read-only
         """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.api_token.touched = datetime.utcnow()
 
     def test_key_set_on_clean(self):
-        """Token.clean() sets Token.key field
+        """AuthToken.clean() sets AuthToken.key field
         """
         self.assertIsNone(self.api_token.key)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.key)
 
     def test_issued_set_on_clean(self):
-        """Token.clean() sets Token.issued field
+        """AuthToken.clean() sets AuthToken.issued field
         """
         self.assertIsNone(self.api_token.issued)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.issued)
 
     def test_issued_static_on_clean(self):
-        """Token.clean() does not change Token.issued field
+        """AuthToken.clean() does not change AuthToken.issued field
         """
         self.api_token.clean()
         expected = self.api_token.issued
@@ -382,14 +382,14 @@ class TokenUnitTestCase(TokenBaseTestCase):
             self.assertEqual(expected, result)
 
     def test_touched_set_on_clean(self):
-        """Token.clean() sets Token.touched field
+        """AuthToken.clean() sets AuthToken.touched field
         """
         self.assertIsNone(self.api_token.touched)
         self.api_token.clean()
         self.assertIsNotNone(self.api_token.touched)
 
     def test_touched_updates_on_clean(self):
-        """Token.clean() updates Token.touched field with a different value
+        """AuthToken.clean() updates AuthToken.touched field with a different value
         """
         from time import sleep
         self.api_token.clean()
@@ -401,20 +401,20 @@ class TokenUnitTestCase(TokenBaseTestCase):
             self.assertNotEqual(expected, result)
 
     def test_touch_updates_touched(self):
-        """Token.touch() sets Token.touched field
+        """AuthToken.touch() sets AuthToken.touched field
         """
         self.assertIsNone(self.api_token.touched)
         self.api_token.touch()
         self.assertIsNotNone(self.api_token.touched)
 
     def test_invalid_key_raises_exception(self):
-        """Token() raises exception for invalid key string
+        """AuthToken() raises exception for invalid key string
         """
         from datetime import datetime
-        from ..auth import Token
+        from ..auth import AuthToken
         from mongoengine import ValidationError
         user = self.api_token.user
-        invalid_token = Token(
+        invalid_token = AuthToken(
             _user=user,
             _key='A bad token',
             _issued=datetime.utcnow())
@@ -422,25 +422,25 @@ class TokenUnitTestCase(TokenBaseTestCase):
             invalid_token.validate()
 
 
-class TokenIntegrationTestCase(TokenBaseTestCase):
+class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
 
     layer = testing.layers.MongoIntegrationTestLayer
 
     def setUp(self):
         from .. import auth
         auth.User.drop_collection()
-        auth.Token.drop_collection()
+        auth.AuthToken.drop_collection()
         user = auth.User.new('test@email.com', 'T3stPa$$word')
-        self.api_token = auth.Token.new(user)
+        self.api_token = auth.AuthToken.new(user)
 
     def test_new_saves_token_to_mongo(self):
         from .. import auth
         import mongoengine
         user = self.api_token.user
         user.save()
-        key = auth.Token.new(user, save=True).key
+        key = auth.AuthToken.new(user, save=True).key
         try:
-            auth.Token.objects.get(_key=key)
+            auth.AuthToken.objects.get(_key=key)
         except mongoengine.DoesNotExist as err:
             msg = 'Unexpected exception raised: {}'
             self.fail(msg.format(err))

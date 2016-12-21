@@ -139,7 +139,7 @@ class _TokenKeyField(mongoengine.StringField):
             raise mongoengine.ValidationError(err.message)
 
 
-class Token(mongoengine.Document, utils.ISerializable):
+class AuthToken(mongoengine.Document, utils.ISerializable):
     """
     An API key issued when a user logs in via api. An API token is automatically
     invalidated if it has not been "touched" in more than 1 hour.
@@ -199,7 +199,7 @@ class Token(mongoengine.Document, utils.ISerializable):
     }
 
     def _serialize(self, fields):
-        with context_managers.no_dereference(Token):
+        with context_managers.no_dereference(AuthToken):
             return {
                 'key': self.key,
                 'user': {

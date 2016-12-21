@@ -1,4 +1,4 @@
-from .mongo.auth import User, Token
+from .mongo.auth import User, AuthToken
 from .mongo.citations import Citation, TextCitation, BookCitation
 from .mongo.organizations import Organization, Publisher
 from .mongo.people import Person
