@@ -205,3 +205,58 @@ class AuthToken(mongoengine.Document, utils.ISerializable):
                 'issued': str(self.issued),
                 'touched': str(self.touched)
             }
+
+
+class ConfirmToken(mongoengine.Document, utils.ISerializable):
+    """
+    A one-time-use account confirmation token generated when a new user is
+    created. Token will survive for a limited amount of time.
+    """
+
+    _key = _TokenKeyField(
+        primary_key=True, db_field='key', unique=True, max_length=56)
+    _user = mongoengine.ReferenceField(User, required=True, unique=True)
+    _issued = mongoengine.DateTimeField(required=True)
+
+    @classmethod
+    def new(cls, user, save=False):
+        token = cls(_user=user)
+        if save:
+            token.save()
+        return token
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def user(self):
+        return self._user
+
+    @property
+    def issued(self):
+        return self._issued
+
+    def clean(self):
+        if not self.key:
+            self._key = utils.gen_key()
+            self._issued = datetime.utcnow()
+
+    meta = {
+        'indexes': [
+            {
+                'fields': ['_issued'],
+                'expireAfterSeconds': 15*60  # 15 minutes
+            }
+        ]
+    }
+
+    def _serialize(self, fields):
+        with context_managers.no_dereference(ConfirmToken):
+            return {
+                'key': self.key,
+                'user': {
+                    'id': str(self.user.id) if self.user.id else None,
+                } if self.user else {},
+                'issued': str(self.issued)
+            }

@@ -15,9 +15,17 @@ def make_user(email, password=None, clean=True, save=False):
     return user
 
 
-def make_token(user, clean=True, save=False):
+def make_auth_token(user, clean=True, save=False):
     from .. import auth
     token = auth.AuthToken(_user=user)
+    if save:
+        token.save()
+    return token
+
+
+def make_conf_token(user, clean=True, save=False):
+    from .. import auth
+    token = auth.ConfirmToken(_user=user)
     if save:
         token.save()
     return token
@@ -313,9 +321,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
 
 
 class AuthTokenBaseTestCase(unittest.TestCase):
-
-    def setUp(self):
-        pass
+    pass
 
 
 class AuthTokenUnitTestCase(AuthTokenBaseTestCase):
@@ -324,7 +330,7 @@ class AuthTokenUnitTestCase(AuthTokenBaseTestCase):
 
     def setUp(self):
         user = make_user('test@email.com')
-        self.api_token = make_token(user)
+        self.api_token = make_auth_token(user)
 
     def test_key_is_readonly(self):
         """AuthToken.key field is read-only
@@ -425,15 +431,15 @@ class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
         from .. import auth
         auth.User.drop_collection()
         auth.AuthToken.drop_collection()
-        user = auth.User.new('test@email.com', 'T3stPa$$word')
-        self.api_token = auth.AuthToken.new(user)
+        self.user = auth.User.new('test@email.com', 'T3stPa$$word')
+        self.api_token = auth.AuthToken.new(self.user)
 
-    def test_new_saves_token_to_mongo(self):
+    def test_new_saves_token_to_db_if_specified(self):
+        """AuthToken.new() saves new token to database if 'save=True' is set"""
+        self.user.save()
         from .. import auth
+        key = auth.AuthToken.new(self.user, save=True).key
         import mongoengine
-        user = self.api_token.user
-        user.save()
-        key = auth.AuthToken.new(user, save=True).key
         try:
             auth.AuthToken.objects.get(_key=key)
         except mongoengine.DoesNotExist as err:
@@ -441,11 +447,14 @@ class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
             self.fail(msg.format(err))
 
     def test_serialize_returns_accurate_dict(self):
+        """AuthToken.serialize() returns an accurate dictionary
+        """
+        self.user.save()
         self.api_token.clean()
         expected = {
             'key': self.api_token.key,
             'user': {
-                'id': None,
+                'id': str(self.user.id),
                 'groups': ['users']
             },
             'issued': str(self.api_token.issued),
@@ -455,10 +464,133 @@ class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
         self.assertEqual(expected, result)
 
     def test_serialized_performs_zero_queries(self):
+        """AuthToken.serialize() performs zero database queries
+        """
         from mongoengine import context_managers
         self.api_token.user.save()
         self.api_token.save()
         expected = 0
         with context_managers.query_counter() as result:
             self.api_token.serialize()
+            self.assertEqual(expected, result)
+
+
+class ConfirmTokenBaseTestCase(unittest.TestCase):
+    pass
+
+
+class ConfirmTokenUnitTestCase(ConfirmTokenBaseTestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        user = make_user('test@email.com', 'T3stPa$$word')
+        self.conf_token = make_conf_token(user)
+
+    def test_key_is_readonly(self):
+        """ConfirmToken.key field is read-only
+        """
+        with self.assertRaises(AttributeError):
+            self.conf_token.key = '7bd8a259670a9577dc473bf4c9ef91db787aa34cad8f0ce62b93a4fe'
+
+    def test_user_is_readonly(self):
+        """ConfirmToken.user field is read-only
+        """
+        with self.assertRaises(AttributeError):
+            self.conf_token.user = make_user('test@email.com')
+
+    def test_issued_is_readonly(self):
+        """ConfirmToken.issued field is read-only
+        """
+        from datetime import datetime
+        with self.assertRaises(AttributeError):
+            self.conf_token.issued = datetime.utcnow()
+
+    def test_key_set_on_clean(self):
+        """ConfirmToken.clean() sets ConfirmToken.key field
+        """
+        self.assertIsNone(self.conf_token.key)
+        self.conf_token.clean()
+        self.assertIsNotNone(self.conf_token.key)
+
+    def test_issued_set_on_clean(self):
+        """ConfirmToken.clean() sets ConfirmToken.issued field
+        """
+        self.assertIsNone(self.conf_token.issued)
+        self.conf_token.clean()
+        self.assertIsNotNone(self.conf_token.issued)
+
+    def test_issued_static_on_clean(self):
+        """ConfirmToken.clean() does not change ConfirmToken.issued field
+        """
+        self.conf_token.clean()
+        expected = self.conf_token.issued
+        for _ in range(5):
+            self.conf_token.clean()
+            result = self.conf_token.issued
+            self.assertEqual(expected, result)
+
+    def test_invalid_key_raises_exception(self):
+        """ConfirmToken() raises exception for invalid key string
+        """
+        from datetime import datetime
+        from ..auth import ConfirmToken
+        from mongoengine import ValidationError
+        user = self.conf_token.user
+        invalid_token = ConfirmToken(
+            _user=user,
+            _key='A bad token',
+            _issued=datetime.utcnow())
+        with self.assertRaises(ValidationError):
+            invalid_token.validate()
+
+
+class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
+
+    layer = testing.layers.MongoIntegrationTestLayer
+
+    def setUp(self):
+        from .. import auth
+        auth.User.drop_collection()
+        auth.ConfirmToken.drop_collection()
+        self.user = make_user('test@email.com', 'T3stPa$$word')
+        self.conf_token = auth.ConfirmToken.new(self.user)
+
+    def test_new_saves_token_to_db_if_specified(self):
+        """ConfirmToken.new() saves new token to database if 'save=True' is set
+        """
+        self.user.save()
+        from .. import auth
+        key = auth.ConfirmToken.new(self.user, save=True).key
+        import mongoengine
+        try:
+            auth.ConfirmToken.objects.get(_key=key)
+        except mongoengine.DoesNotExist as err:
+            msg = 'Unexpected exception raised: {}'
+            self.fail(msg.format(err))
+
+    def test_serialize_returns_accurate_dict(self):
+        """ConfirmToken.serialize() returns an accurate dictionary
+        """
+        self.user.save()
+        self.conf_token.clean()
+        expected = {
+            'key': self.conf_token.key,
+            'user': {
+                'id': str(self.user.id)
+            },
+            'issued': str(self.conf_token.issued)
+        }
+        result = self.conf_token.serialize()
+        self.assertEqual(expected, result)
+
+    def test_serialized_performs_zero_queries(self):
+        """ConfirmToken.serialize() performs zero database queries
+        """
+        from mongoengine import context_managers
+        self.conf_token.user.save()
+        self.conf_token.save()
+        expected = 0
+        with context_managers.query_counter() as result:
+            self.conf_token.serialize()
             self.assertEqual(expected, result)
