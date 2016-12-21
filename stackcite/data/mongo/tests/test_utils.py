@@ -3,6 +3,16 @@ import unittest
 from stackcite import testing
 
 
+class GenKeyTestCase(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def test_returns_56_char_key(self):
+        from .. import utils
+        result = utils.gen_key()
+        self.assertEqual(56, len(result))
+
+
 class ISerializableBaseTestCase(unittest.TestCase):
 
     def setUp(self):

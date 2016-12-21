@@ -1,4 +1,13 @@
+import os
+import hashlib
 import mongoengine
+
+
+def gen_key():
+    """
+    Generates a cryptographic key used for API Tokens and account confirmation.
+    """
+    return hashlib.sha224(os.urandom(128)).hexdigest()
 
 
 class ISerializable(object):

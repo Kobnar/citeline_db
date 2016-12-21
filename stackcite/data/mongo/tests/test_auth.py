@@ -326,16 +326,11 @@ class AuthTokenUnitTestCase(AuthTokenBaseTestCase):
         user = make_user('test@email.com')
         self.api_token = make_token(user)
 
-    def test_new_returns_56_char_key(self):
-        from .. import auth
-        result = auth.AuthToken.gen_key()
-        self.assertEqual(56, len(result))
-
     def test_key_is_readonly(self):
         """AuthToken.key field is read-only
         """
         with self.assertRaises(AttributeError):
-            self.api_token.key = self.api_token.gen_key()
+            self.api_token.key = '7bd8a259670a9577dc473bf4c9ef91db787aa34cad8f0ce62b93a4fe'
 
     def test_user_is_readonly(self):
         """AuthToken.user field is read-only

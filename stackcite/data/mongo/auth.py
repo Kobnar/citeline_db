@@ -152,10 +152,6 @@ class AuthToken(mongoengine.Document, utils.ISerializable):
     _issued = mongoengine.DateTimeField(db_field='issued', required=True)
     _touched = mongoengine.DateTimeField(db_field='touched', required=True)
 
-    @staticmethod
-    def gen_key():
-        return hashlib.sha224(os.urandom(128)).hexdigest()
-
     @classmethod
     def new(cls, user, save=False):
         token = cls(_user=user)
@@ -186,7 +182,7 @@ class AuthToken(mongoengine.Document, utils.ISerializable):
     def clean(self):
         now = self.touch()
         if not self.key:
-            self._key = self.gen_key()
+            self._key = utils.gen_key()
             self._issued = now
 
     meta = {
