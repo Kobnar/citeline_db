@@ -641,6 +641,34 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
             msg = 'Unexpected exception raised: {}'
             self.fail(msg.format(err))
 
+    def test_confirm_sets_user_confirm_field_true(self):
+        """ConfirmToken.confirm() sets associated User.confirmed field to 'True'
+        """
+        self.conf_token.confirm()
+        result = self.user.confirmed
+        self.assertTrue(result)
+
+    def test_confirm_saves_user_confirm_to_database(self):
+        """ConfirmToken.confirm() saves user confirmation to database
+        """
+        self.user.save()
+        self.conf_token.confirm()
+        from stackcite import data as db
+        result = db.User.objects.get(id=self.user.id).confirmed
+        self.assertTrue(result)
+
+    def test_confirm_deletes_confirmation_token(self):
+        """ConfirmToken.confirm() deletes confirmation token if successful
+        """
+        self.user.save()
+        self.conf_token.save()
+        key = self.conf_token.key
+        self.conf_token.confirm()
+        import mongoengine
+        from stackcite import data as db
+        with self.assertRaises(mongoengine.DoesNotExist):
+            db.ConfirmToken.objects.get(_key=key)
+
     def test_serialize_returns_accurate_dict(self):
         """ConfirmToken.serialize() returns an accurate dictionary
         """

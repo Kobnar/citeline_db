@@ -19,6 +19,7 @@ class User(utils.IDocument):
     DEFAULT_GROUPS = [auth.USERS]
 
     email = mongoengine.EmailField(required=True, unique=True)
+    confirmed = mongoengine.BooleanField()
 
     _groups = mongoengine.ListField(
         mongoengine.StringField(choices=auth.GROUP_CHOICES), db_field='groups')
@@ -233,6 +234,11 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
     @property
     def issued(self):
         return self._issued
+
+    def confirm(self):
+        self.user.confirmed = True
+        self.user.save()
+        self.delete()
 
     def clean(self):
         if not self.key:
