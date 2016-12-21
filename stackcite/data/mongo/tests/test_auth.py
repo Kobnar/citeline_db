@@ -43,6 +43,8 @@ class UserUnitTestCase(UserBaseTestCase):
     layer = testing.layers.UnitTestLayer
     
     def test_email_is_required(self):
+        """User.email is a required field
+        """
         try:
             self.user.validate()
         except mongoengine.ValidationError as err:
@@ -50,7 +52,9 @@ class UserUnitTestCase(UserBaseTestCase):
             invalid_fields = err_dict.keys()
             self.assertIn('email', invalid_fields)
 
-    def test_joined_dtg_is_required(self):
+    def test_joined_is_required(self):
+        """User.joined is a required field
+        """
         try:
             self.user.validate(clean=False)
         except mongoengine.ValidationError as err:
@@ -59,6 +63,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertIn('_joined', invalid_fields)
 
     def test_set_password_call_is_required(self):
+        """User.set_password() call is required to validate document
+        """
         try:
             self.user.validate()
         except mongoengine.ValidationError as err:
@@ -68,13 +74,19 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertIn('_hash', invalid_fields)
 
     def test_default_group_set(self):
+        """User.groups sets default groups
+        """
         self.assertEqual(self.user.groups, ['users'])
 
     def test_groups_is_read_only(self):
+        """User.groups is read-only
+        """
         with self.assertRaises(AttributeError):
             self.user.groups = ['users', 'admins']
 
     def test_add_group_adds_valid_group(self):
+        """User.add_group() adds a valid group
+        """
         from stackcite.data.json import auth
         try:
             self.user.add_group(auth.STAFF)
@@ -83,6 +95,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.fail(msg.format(err))
 
     def test_add_group_does_not_add_duplicate_group(self):
+        """User.add_group() will not add a duplicate group
+        """
         from stackcite.data.json import auth
         self.user.add_group(auth.USERS)
         expected = [auth.USERS]
@@ -90,6 +104,8 @@ class UserUnitTestCase(UserBaseTestCase):
         self.assertEqual(expected, result)
 
     def test_remove_group_removes_valid_group(self):
+        """User.remove_group() removes a valid group
+        """
         from stackcite.data.json import auth
         self.user.add_group('staff')
         try:
@@ -99,34 +115,48 @@ class UserUnitTestCase(UserBaseTestCase):
             self.fail(msg.format(err))
 
     def test_add_group_raises_exception_for_invalid_group(self):
+        """User.add_group() raises exception for invalid group
+        """
         from stackcite.data import validators
         with self.assertRaises(validators.ValidationError):
             self.user.add_group('invalid')
 
     def test_remove_group_raises_exception_if_not_in_group(self):
+        """User.remove_group() raises exception if not in group
+        """
         with self.assertRaises(ValueError):
             self.user.remove_group('invalid')
 
     def test_joined_is_read_only(self):
+        """User.joined is read-only
+        """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.user.joined = datetime.now()
 
     def test_last_login_is_read_only(self):
+        """User.last_login is read-only
+        """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.user.last_login = datetime.now()
 
     def test_prev_login_is_read_only(self):
+        """User.prev_login is read-only
+        """
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.user.previous_login = datetime.now()
 
     def test_touch_login_sets_last_login(self):
+        """User.touch_login() sets 'last_login'
+        """
         self.user.touch_login()
         self.assertIsNotNone(self.user.last_login)
 
     def test_second_touch_login_sets_new_last_login(self):
+        """User.touch_login() sets new 'last_login' if called twice
+        """
         self.user.touch_login()
         first_login = self.user.last_login
         import time
@@ -135,15 +165,21 @@ class UserUnitTestCase(UserBaseTestCase):
         self.assertNotEqual(first_login, self.user.last_login)
 
     def test_first_touch_login_does_not_set_previous_login(self):
+        """User.touch_login() does not change 'previous_login' if called once
+        """
         self.user.touch_login()
         self.assertIsNone(self.user.previous_login)
 
     def test_second_touch_login_sets_previous_login(self):
+        """User.touch_login() changes 'previous_login' if called twice
+        """
         self.user.touch_login()
         self.user.touch_login()
         self.assertIsNotNone(self.user.previous_login)
 
     def test_touch_login_sets_previous_login_to_last_login(self):
+        """User.touch_login() sets 'previous_login' to original 'last_login'
+        """
         from itertools import repeat
         for _ in repeat(None, 3):
             self.user.touch_login()
@@ -154,6 +190,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertEqual(first_login, self.user.previous_login)
 
     def test_set_password_passes_validation_with_valid_passwords(self):
+        """User.set_password() accepts valid passwords
+        """
         from stackcite.testing import data
         test_data = data.valid_passwords()
         for valid_password in test_data:
@@ -164,6 +202,8 @@ class UserUnitTestCase(UserBaseTestCase):
                 self.fail(msg.format(err))
 
     def test_set_password_fails_validation_with_invalid_passwords(self):
+        """User.set_password() raises exception for invalid passwords
+        """
         from stackcite.testing import data
         test_data = data.invalid_passwords()
         from stackcite.data import validators
@@ -172,10 +212,14 @@ class UserUnitTestCase(UserBaseTestCase):
                 self.user.set_password(invalid_password)
 
     def test_check_password_returns_false_if_password_not_set(self):
+        """User.check_password() returns false if password has not been set
+        """
         result = self.user.check_password('T3stPa$$word')
         self.assertFalse(result)
 
     def test_check_password_fails_validation_with_invalid_passwords(self):
+        """User.check_password() raises exception for invalid passwords
+        """
         self.user.set_password('T3stPa$$word')
         from stackcite.testing import data
         test_data = data.invalid_passwords()
@@ -185,6 +229,8 @@ class UserUnitTestCase(UserBaseTestCase):
                 self.user.check_password(invalid_password)
 
     def test_check_password_matches_correct_passwords(self):
+        """User.check_password() returns True for correct passwords
+        """
         from stackcite.testing import data
         test_data = data.valid_passwords()
         for password in test_data:
@@ -193,6 +239,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertTrue(result)
 
     def test_check_password_fails_incorrect_passwords(self):
+        """User.check_password() returns False for incorrect passwords
+        """
         from stackcite.testing import data
         test_data = data.valid_passwords()
         for password in test_data:
@@ -201,6 +249,8 @@ class UserUnitTestCase(UserBaseTestCase):
             self.assertFalse(result)
 
     def test_password_passes_validation_with_valid_passwords(self):
+        """User.password setter accepts valid passwords
+        """
         try:
             self.user.password = 'T3stPa$$word'
         except mongoengine.ValidationError as err:
@@ -208,22 +258,32 @@ class UserUnitTestCase(UserBaseTestCase):
             self.fail(msg.format(err))
 
     def test_password_fails_validation_with_invalid_passwords(self):
+        """User.password setter raises exception for invalid passwords
+        """
         from stackcite.data import validators
         with self.assertRaises(validators.ValidationError):
             self.user.password = 'invalid_password'
 
     def test_password_returns_false_if_no_password_set(self):
+        """User.password getter returns False if no password has been set
+        """
         self.assertFalse(self.user.password)
 
     def test_password_returns_true_if_password_set(self):
+        """User.password getter returns True if password has been set
+        """
         self.user.password = 'T3stPa$$word'
         self.assertTrue(self.user.password)
 
-    def test_clean_sets_joined_dtg(self):
+    def test_clean_sets_joined(self):
+        """User.clean() sets 'joined' field
+        """
         self.user.clean()
         self.assertIsNotNone(self.user.joined)
 
     def test_clean_does_not_change_joined_on_addl_saves(self):
+        """User.clean() does not change 'joined' if called more than once
+        """
         self.user.clean()
         first_dtg = self.user.joined
         import time
@@ -243,6 +303,8 @@ class UserIntegrationTestCase(UserBaseTestCase):
         super().setUp()
         
     def test_email_is_unique(self):
+        """User.email
+        """
         from .. import auth
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
@@ -254,16 +316,22 @@ class UserIntegrationTestCase(UserBaseTestCase):
             dup_user.save()
 
     def test_new_does_not_save_if_save_not_set(self):
+        """User.new() does not save new user by default
+        """
         from .. import auth
         user = auth.User.new('test@email.com', 'T3stPa$$word')
         self.assertIsNone(user.id)
 
-    def test_new_saves_user_and_profile(self):
+    def test_new_saves_user_if_save_set(self):
+        """User.new() saves data if 'save=True'
+        """
         from .. import auth
         user = auth.User.new('test@email.com', 'T3stPa$$word', True)
         self.assertIsNotNone(user.id)
 
     def test_authenticate_correct_password_returns_user(self):
+        """User.authenticate() returns user for correct password
+        """
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
         self.user.save()
@@ -272,15 +340,19 @@ class UserIntegrationTestCase(UserBaseTestCase):
         self.assertEqual(self.user, result)
 
     def test_authenticate_incorrect_password_raises_exception(self):
+        """User.authenticate() raises exception for incorrect password
+        """
         self.user.email = 'test@email.com'
         self.user.set_password('T3stPa$$word')
         self.user.save()
         from .. import auth
         from ..exceptions import AuthenticationError
         with self.assertRaises(AuthenticationError):
-            auth.User.authenticate(self.user.email, 'B4dPa$$word')
+            auth.User.authenticate(self.user.email, 'Wr0ngPa$$word')
 
     def test_serialize_returns_correct_dict(self):
+        """User.serialize() returns an accurate dictionary
+        """
         self.maxDiff = None
         import bson
         from stackcite.data.json import auth
@@ -300,6 +372,8 @@ class UserIntegrationTestCase(UserBaseTestCase):
         self.assertEqual(expected, result)
 
     def test_serialize_returns_filtered_dict(self):
+        """User.serialize() returns a filtered dictionary if 'fields' are provided
+        """
         self.maxDiff = None
         import bson
         from stackcite.data.json import auth
