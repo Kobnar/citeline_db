@@ -239,6 +239,7 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
         self.user.confirmed = True
         self.user.save()
         self.delete()
+        return self.user
 
     def clean(self):
         if not self.key:

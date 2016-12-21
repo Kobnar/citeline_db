@@ -669,6 +669,15 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
         with self.assertRaises(mongoengine.DoesNotExist):
             db.ConfirmToken.objects.get(_key=key)
 
+    def test_confirm_returns_user(self):
+        """ConfirmToken.confirm() returns associated User object
+        """
+        self.user.save()
+        self.conf_token.save()
+        expected = self.user.id
+        result = self.conf_token.confirm().id
+        self.assertEqual(expected, result)
+
     def test_serialize_returns_accurate_dict(self):
         """ConfirmToken.serialize() returns an accurate dictionary
         """
