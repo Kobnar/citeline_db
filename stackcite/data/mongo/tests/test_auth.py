@@ -547,6 +547,18 @@ class AuthTokenIntegrationTestCase(AuthTokenBaseTestCase):
         self.user = auth.User.new('test@email.com', 'T3stPa$$word')
         self.api_token = auth.AuthToken.new(self.user)
 
+    def test_user_is_not_unique(self):
+        """AuthToken.user is not a unique field
+        """
+        self.user.save()
+        from .. import auth
+        auth.AuthToken.new(self.user, save=True)
+        import mongoengine
+        try:
+            auth.AuthToken.new(self.user, save=True)
+        except mongoengine.NotUniqueError as err:
+            self.fail(err)
+
     def test_new_saves_token_to_db_if_specified(self):
         """AuthToken.new() saves new token to database if 'save=True' is set"""
         self.user.save()

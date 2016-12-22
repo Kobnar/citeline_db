@@ -153,8 +153,7 @@ class AuthToken(mongoengine.Document, utils.ISerializable):
     _key = TokenKeyField(
         primary_key=True, db_field='key', unique=True, max_length=56)
     _user = mongoengine.CachedReferenceField(
-        User, db_field='user',
-        required=True, unique=True, fields=('id', '_groups'))
+        User, db_field='user', required=True, fields=('id', '_groups'))
     _issued = mongoengine.DateTimeField(db_field='issued', required=True)
     _touched = mongoengine.DateTimeField(db_field='touched', required=True)
 
