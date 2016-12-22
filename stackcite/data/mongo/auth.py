@@ -11,6 +11,21 @@ from . import utils
 from . import exceptions
 
 
+class TokenKeyField(mongoengine.StringField):
+    """
+    A randomly generated string used as an API key.
+    """
+
+    _validate_key = validators.KeyValidator()
+
+    def validate(self, value):
+        super().validate(value)
+        try:
+            self._validate_key(value)
+        except validators.ValidationError as err:
+            raise mongoengine.ValidationError(err.message)
+
+
 class User(utils.IDocument):
     """
     A user account.
@@ -19,11 +34,11 @@ class User(utils.IDocument):
     DEFAULT_GROUPS = [auth.USERS]
 
     email = mongoengine.EmailField(required=True, unique=True)
-    confirmed = mongoengine.BooleanField()
 
     _groups = mongoengine.ListField(
         mongoengine.StringField(choices=auth.GROUP_CHOICES), db_field='groups')
     _joined = mongoengine.DateTimeField(db_field='joined', required=True)
+    _confirmed = mongoengine.DateTimeField(db_field='confirmed')
     _last_login = mongoengine.DateTimeField(db_field='last_login')
     _prev_login = mongoengine.DateTimeField(db_field='prev_login')
     _salt = mongoengine.StringField(required=True)
@@ -48,6 +63,13 @@ class User(utils.IDocument):
     @property
     def joined(self):
         return self._joined
+
+    @property
+    def confirmed(self):
+        return self._confirmed
+
+    def confirm(self):
+        self._confirmed = datetime.utcnow()
 
     @property
     def last_login(self):
@@ -122,31 +144,17 @@ class User(utils.IDocument):
         }
 
 
-class _TokenKeyField(mongoengine.StringField):
-    """
-    A randomly generated string used as an API key.
-    """
-
-    _validate_key = validators.KeyValidator()
-
-    def validate(self, value):
-        super().validate(value)
-        try:
-            self._validate_key(value)
-        except validators.ValidationError as err:
-            raise mongoengine.ValidationError(err.message)
-
-
 class AuthToken(mongoengine.Document, utils.ISerializable):
     """
     An API key issued when a user logs in via api. An API token is automatically
     invalidated if it has not been "touched" in more than 1 hour.
     """
 
-    _key = _TokenKeyField(
+    _key = TokenKeyField(
         primary_key=True, db_field='key', unique=True, max_length=56)
     _user = mongoengine.CachedReferenceField(
-        User, required=True, unique=True, fields=('id', '_groups'))
+        User, db_field='user',
+        required=True, unique=True, fields=('id', '_groups'))
     _issued = mongoengine.DateTimeField(db_field='issued', required=True)
     _touched = mongoengine.DateTimeField(db_field='touched', required=True)
 
@@ -211,10 +219,12 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
     created. Token will survive for a limited amount of time.
     """
 
-    _key = _TokenKeyField(
+    _key = TokenKeyField(
         primary_key=True, db_field='key', unique=True, max_length=56)
-    _user = mongoengine.ReferenceField(User, required=True, unique=True)
-    _issued = mongoengine.DateTimeField(required=True)
+    _user = mongoengine.ReferenceField(
+        User, db_field='user',
+        required=True, unique=True)
+    _issued = mongoengine.DateTimeField(db_field='issued', required=True)
 
     @classmethod
     def new(cls, user, save=False):
@@ -235,8 +245,8 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
     def issued(self):
         return self._issued
 
-    def confirm(self):
-        self.user.confirmed = True
+    def confirm_user(self):
+        self.user.confirm()
         self.user.save()
         self.delete()
         return self.user

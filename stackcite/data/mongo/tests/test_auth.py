@@ -31,6 +31,33 @@ def make_conf_token(user, clean=True, save=False):
     return token
 
 
+class TokenKeyFieldTestCase(unittest.TestCase):
+
+    layer = testing.layers.UnitTestLayer
+
+    def setUp(self):
+        from ..auth import TokenKeyField
+        self.field = TokenKeyField()
+
+    def test_validate_accepts_valid_isbn10s(self):
+        """TokenKeyField.validate() accepts a valid token key
+        """
+        valid_key = '2107d2510eee901146dad0b54ef67176726a790f68ce240065296b71'
+        from mongoengine import ValidationError
+        try:
+            self.field.validate(valid_key)
+        except ValidationError as err:
+            self.fail(err)
+
+    def test_validate_raises_exception_for_invalid_isbns(self):
+        """TokenKeyField.validate() raises exception for invalid token key
+        """
+        invalid_key = 'derp'
+        from mongoengine import ValidationError
+        with self.assertRaises(ValidationError):
+            self.field.validate(invalid_key)
+
+
 class UserBaseTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -133,6 +160,20 @@ class UserUnitTestCase(UserBaseTestCase):
         from datetime import datetime
         with self.assertRaises(AttributeError):
             self.user.joined = datetime.now()
+
+    def test_confirmed_is_read_only(self):
+        """User.confirmed is read-only
+        """
+        from datetime import datetime
+        with self.assertRaises(AttributeError):
+            self.user.confirmed = datetime.now()
+
+    def test_confirm_sets_confirmed(self):
+        """User.confirm() sets User.confirmed field
+        """
+        self.user.confirm()
+        result = self.user.confirmed
+        self.assertIsNotNone(result)
 
     def test_last_login_is_read_only(self):
         """User.last_login is read-only
@@ -644,7 +685,7 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
     def test_confirm_sets_user_confirm_field_true(self):
         """ConfirmToken.confirm() sets associated User.confirmed field to 'True'
         """
-        self.conf_token.confirm()
+        self.conf_token.confirm_user()
         result = self.user.confirmed
         self.assertTrue(result)
 
@@ -652,7 +693,7 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
         """ConfirmToken.confirm() saves user confirmation to database
         """
         self.user.save()
-        self.conf_token.confirm()
+        self.conf_token.confirm_user()
         from stackcite import data as db
         result = db.User.objects.get(id=self.user.id).confirmed
         self.assertTrue(result)
@@ -663,7 +704,7 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
         self.user.save()
         self.conf_token.save()
         key = self.conf_token.key
-        self.conf_token.confirm()
+        self.conf_token.confirm_user()
         import mongoengine
         from stackcite import data as db
         with self.assertRaises(mongoengine.DoesNotExist):
@@ -675,7 +716,7 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
         self.user.save()
         self.conf_token.save()
         expected = self.user.id
-        result = self.conf_token.confirm().id
+        result = self.conf_token.confirm_user().id
         self.assertEqual(expected, result)
 
     def test_serialize_returns_accurate_dict(self):
