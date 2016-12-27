@@ -69,6 +69,8 @@ class User(utils.IDocument):
         return self._confirmed
 
     def confirm(self):
+        for group in self.DEFAULT_GROUPS:
+            self.add_group(group)
         self._confirmed = datetime.utcnow()
 
     @property

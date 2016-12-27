@@ -175,6 +175,15 @@ class UserUnitTestCase(UserBaseTestCase):
         result = self.user.confirmed
         self.assertIsNotNone(result)
 
+    def test_confirm_adds_default_group(self):
+        """User.confirm() adds user to default group
+        """
+        self.user.confirm()
+        from ..auth import User
+        default_groups = User.DEFAULT_GROUPS
+        for g in default_groups:
+            self.assertIn(g, self.user.groups)
+
     def test_last_login_is_read_only(self):
         """User.last_login is read-only
         """
