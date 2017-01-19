@@ -30,7 +30,7 @@ class AuthToken(mongoengine.Document, utils.ISerializable):
     """
 
     _key = TokenKeyField(
-        primary_key=True, db_field='key', unique=True, max_length=56)
+        primary_key=True, db_field='key', max_length=56)
     _user = mongoengine.CachedReferenceField(
         users.User, db_field='user', required=True, fields=('id', '_groups'))
     _issued = mongoengine.DateTimeField(db_field='issued', required=True)
@@ -98,7 +98,7 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
     """
 
     _key = TokenKeyField(
-        primary_key=True, db_field='key', unique=True, max_length=56)
+        primary_key=True, db_field='key', max_length=56)
     _user = mongoengine.ReferenceField(
         users.User, db_field='user',
         required=True, unique=True)
