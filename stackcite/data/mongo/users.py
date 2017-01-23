@@ -67,7 +67,7 @@ class User(utils.IDocument):
 
     def touch_login(self):
         self._prev_login = self._last_login
-        self._last_login = datetime.now()
+        self._last_login = datetime.utcnow()
         return self.last_login
 
     def set_password(self, new_password):
@@ -118,7 +118,7 @@ class User(utils.IDocument):
 
     def clean(self):
         if not self._joined:
-            self._joined = datetime.now()
+            self._joined = datetime.utcnow()
 
     def _serialize(self, fields):
         return {
