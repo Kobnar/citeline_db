@@ -355,3 +355,15 @@ class ConfirmTokenIntegrationTestCase(ConfirmTokenBaseTestCase):
         with context_managers.query_counter() as result:
             self.conf_token.serialize()
             self.assertEqual(expected, result)
+
+    def test_deleted_user_cascades_to_confirm_token(self):
+        """ConfirmToken.user is set to cascade delete associated ConfirmToken
+        """
+        self.conf_token.user.save()
+        self.conf_token.save()
+        key = self.conf_token.key
+        from stackcite import data as db
+        db.User.objects(id=self.conf_token.user.id).delete()
+        import mongoengine
+        with self.assertRaises(mongoengine.DoesNotExist):
+            db.ConfirmToken.objects.get(_key=key)
