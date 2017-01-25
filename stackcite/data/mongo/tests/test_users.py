@@ -363,6 +363,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
             'groups': [],
             'joined': str(self.user.joined),
             'last_login': str(last_login),
+            'previous_login': None
         }
         result = self.user.serialize()
         self.assertEqual(expected, result)

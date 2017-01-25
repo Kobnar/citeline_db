@@ -126,5 +126,6 @@ class User(utils.IDocument):
             'email': self.email,
             'groups': self.groups,
             'joined': str(self.joined),
-            'last_login': str(self.last_login)
+            'last_login': str(self.last_login) if self.last_login else None,
+            'previous_login': str(self.previous_login) if self.previous_login else None
         }
