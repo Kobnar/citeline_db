@@ -129,3 +129,10 @@ class User(utils.IDocument):
             'last_login': str(self.last_login) if self.last_login else None,
             'previous_login': str(self.previous_login) if self.previous_login else None
         }
+
+    def _deserialize(self, data):
+        if data.get('groups'):
+            groups = data.pop('groups')
+            for group in groups:
+                self.add_group(group)
+        super()._deserialize(data)

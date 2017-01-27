@@ -289,6 +289,16 @@ class UserUnitTestCase(UserBaseTestCase):
         second_dtg = self.user.joined
         self.assertEqual(first_dtg, second_dtg)
 
+    def test_deserialize_deserializes_list_of_groups(self):
+        """User.deserialize() deserializes a list of group names
+        """
+        data = {'groups': ['users', 'staff']}
+        try:
+            self.user.deserialize(data)
+        except AttributeError as err:
+            msg = 'Unexpected exception raised: {}'.format(err)
+            self.fail(msg)
+
 
 class UserIntegrationTestCase(UserBaseTestCase):
 
