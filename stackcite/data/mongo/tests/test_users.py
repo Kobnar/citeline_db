@@ -299,6 +299,23 @@ class UserUnitTestCase(UserBaseTestCase):
             msg = 'Unexpected exception raised: {}'.format(err)
             self.fail(msg)
 
+    def test_deserialize_removes_existing_groups(self):
+        """User.deserialize() removes old groups not defined in a new list
+        """
+        data = {'groups': ['users', 'staff']}
+        self.user.add_group('admin')
+        self.user.deserialize(data)
+        result = self.user.groups
+        self.assertNotIn('admin', result)
+
+    def test_deserialize_rejects_invalid_group(self):
+        """User.deserialize() raises exception for invalid groups
+        """
+        data = {'groups': ['farts']}
+        from stackcite.data.validators import ValidationError
+        with self.assertRaises(ValidationError):
+            self.user.deserialize(data)
+
 
 class UserIntegrationTestCase(UserBaseTestCase):
 

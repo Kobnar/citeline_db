@@ -133,6 +133,10 @@ class User(utils.IDocument):
     def _deserialize(self, data):
         if data.get('groups'):
             groups = data.pop('groups')
-            for group in groups:
-                self.add_group(group)
+            for new_group in groups:
+                for old_group in self.groups:
+                    if old_group not in groups:
+                        self.remove_group(old_group)
+                if new_group not in self.groups:
+                    self.add_group(new_group)
         super()._deserialize(data)
