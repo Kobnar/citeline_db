@@ -99,9 +99,8 @@ class ConfirmToken(mongoengine.Document, utils.ISerializable):
 
     _key = TokenKeyField(
         primary_key=True, db_field='key', max_length=56)
-    _user = mongoengine.ReferenceField(
-        users.User, db_field='user',
-        required=True, unique=True, reverse_delete_rule=mongoengine.CASCADE)
+    _user = mongoengine.CachedReferenceField(
+        users.User, db_field='user', required=True, fields=('id',))
     _issued = mongoengine.DateTimeField(db_field='issued', required=True)
 
     @classmethod
