@@ -365,7 +365,7 @@ class UserIntegrationTestCase(UserBaseTestCase):
         self.user.set_password('T3stPa$$word')
         self.user.save()
         from .. import users
-        from ..exceptions import AuthenticationError
+        from stackcite.data.exceptions import AuthenticationError
         with self.assertRaises(AuthenticationError):
             users.User.authenticate(self.user.email, 'Wr0ngPa$$word')
 

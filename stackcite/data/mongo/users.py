@@ -7,7 +7,7 @@ from stackcite.data import validators
 from stackcite.data.static import auth
 
 from . import utils
-from . import exceptions
+from stackcite.data import exceptions
 
 
 class User(utils.IDocument):

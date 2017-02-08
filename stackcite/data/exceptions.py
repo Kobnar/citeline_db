@@ -13,3 +13,11 @@ class StackciteError(Exception):
             return '{}: {}'.format(self.__class__.__name__, self.message)
         else:
             return self.__class__.__name__
+
+
+class AuthenticationError(StackciteError):
+    """
+    A custom exception raised when authentication fails for whatever reason.
+    """
+
+    _DEFAULT_MESSAGE = 'Authentication failed'
