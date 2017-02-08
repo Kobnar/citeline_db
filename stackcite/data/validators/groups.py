@@ -1,4 +1,4 @@
-from stackcite.data.json import auth
+from stackcite.data.static import auth
 
 from . import exceptions
 

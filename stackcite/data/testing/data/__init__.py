@@ -1,11 +1,14 @@
+import os
 import json
-import pkg_resources
+
+
+_DIR = os.path.dirname(__file__)
 
 
 def _load_json_file(filename):
-    path = 'data/testing/data/' + filename
-    json_data = pkg_resources.resource_string('stackcite', path)
-    return json.loads(json_data.decode('utf-8'))
+    path = os.path.join(_DIR, filename)
+    with open(path) as json_file:
+        return json.load(json_file)
 
 
 def _load_db_data(key):

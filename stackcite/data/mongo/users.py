@@ -4,7 +4,7 @@ import bcrypt
 import mongoengine
 
 from stackcite.data import validators
-from stackcite.data.json import auth
+from stackcite.data.static import auth
 
 from . import utils
 from . import exceptions

@@ -61,7 +61,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_add_group_adds_valid_group(self):
         """User.add_group() adds a valid group
         """
-        from stackcite.data.json import auth
+        from stackcite.data.static import auth
         try:
             self.user.add_group(auth.STAFF)
         except ValueError as err:
@@ -71,7 +71,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_add_group_does_not_add_duplicate_group(self):
         """User.add_group() will not add a duplicate group
         """
-        from stackcite.data.json import auth
+        from stackcite.data.static import auth
         self.user.add_group(auth.USERS)
         expected = [auth.USERS]
         result = self.user.groups
@@ -80,7 +80,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_remove_group_removes_valid_group(self):
         """User.remove_group() removes a valid group
         """
-        from stackcite.data.json import auth
+        from stackcite.data.static import auth
         self.user.add_group('staff')
         try:
             self.user.remove_group(auth.STAFF)

@@ -1,4 +1,4 @@
-from stackcite.data.json import utils
+from stackcite.data.static import utils
 
 
 PREFIXES = utils.load_data('people/prefixes.json')

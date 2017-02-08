@@ -1,6 +1,6 @@
 import mongoengine
 
-from stackcite.data.json import people
+from stackcite.data.static import people
 
 from . import utils
 
@@ -58,7 +58,7 @@ class Name(utils.IEmbeddedDocument):
         :param name: A name string
         :return: A 3-tuple (first, middle, last)
         """
-        # TODO: Parse prefixes and suffixes.json
+        # TODO: Parse prefixes and suffixes.static
         name_chunks = name.split()
         name_dict = dict()
 

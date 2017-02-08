@@ -145,7 +145,7 @@ class NameUnitTestCase(NameBaseTestCase):
             self.assertEqual(expected, result)
 
     def test_full_setter_catches_known_suffixes(self):
-        """Name.full setter catches known suffixes.json
+        """Name.full setter catches known suffixes.static
         """
         from ..people import Name
         name = 'John Nobody Doe'

@@ -23,8 +23,7 @@ setup(
     author='Konrad R.K. Ludwig',
     author_email='konrad.rk.ludwig@gmail.com',
     url='http://www.konradrkludwig.com/',
-    packages=['stackcite'],
+    packages=['stackcite.data'],
     namespace_packages=['stackcite'],
-    package_data={'stackcite': ['data/json/*.json', 'data/testing/data/*.json']},
     install_requires=requires
 )

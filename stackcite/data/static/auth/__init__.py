@@ -1,4 +1,4 @@
-from stackcite.data.json import utils
+from stackcite.data.static import utils
 
 
 GROUP_CHOICES = utils.load_data('auth/groups.json')
