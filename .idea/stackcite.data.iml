@@ -7,7 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/env" />
       <excludeFolder url="file://$MODULE_DIR$/htmlcov" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.5.2 virtualenv at ~/Database/S/stackcite/stackcite_db/env" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5.2 virtualenv at ~/Database/S/stackcite/env" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
