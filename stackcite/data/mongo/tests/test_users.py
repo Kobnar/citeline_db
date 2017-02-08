@@ -2,7 +2,7 @@ import unittest
 
 import mongoengine
 
-from stackcite import testing
+from stackcite.data import testing
 
 
 class UserBaseTestCase(unittest.TestCase):
@@ -189,8 +189,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_set_password_passes_validation_with_valid_passwords(self):
         """User.set_password() accepts valid passwords
         """
-        from stackcite.testing import data
-        test_data = data.valid_passwords()
+        test_data = testing.data.valid_passwords()
         for valid_password in test_data:
             try:
                 self.user.set_password(valid_password)
@@ -201,8 +200,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_set_password_fails_validation_with_invalid_passwords(self):
         """User.set_password() raises exception for invalid passwords
         """
-        from stackcite.testing import data
-        test_data = data.invalid_passwords()
+        test_data = testing.data.invalid_passwords()
         from stackcite.data import validators
         for invalid_password in test_data:
             with self.assertRaises(validators.ValidationError):
@@ -218,8 +216,7 @@ class UserUnitTestCase(UserBaseTestCase):
         """User.check_password() raises exception for invalid passwords
         """
         self.user.set_password('T3stPa$$word')
-        from stackcite.testing import data
-        test_data = data.invalid_passwords()
+        test_data = testing.data.invalid_passwords()
         from stackcite.data import validators
         for invalid_password in test_data:
             with self.assertRaises(validators.ValidationError):
@@ -228,8 +225,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_check_password_matches_correct_passwords(self):
         """User.check_password() returns True for correct passwords
         """
-        from stackcite.testing import data
-        test_data = data.valid_passwords()
+        test_data = testing.data.valid_passwords()
         for password in test_data:
             self.user.set_password(password)
             result = self.user.check_password(password)
@@ -238,8 +234,7 @@ class UserUnitTestCase(UserBaseTestCase):
     def test_check_password_fails_incorrect_passwords(self):
         """User.check_password() returns False for incorrect passwords
         """
-        from stackcite.testing import data
-        test_data = data.valid_passwords()
+        test_data = testing.data.valid_passwords()
         for password in test_data:
             self.user.set_password(password)
             result = self.user.check_password('Wr0ngPa$$word')

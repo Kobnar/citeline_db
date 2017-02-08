@@ -1,5 +1,5 @@
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
@@ -16,14 +16,15 @@ requires = [
 ]
 
 setup(
-    name='Stackcite Database Schema',
+    name='Stackcite Database',
     version='0.0',
-    description='A database library for Stackcite services',
+    description='A database library for Stackcite services.',
     long_description=README + '\n\n' + CHANGES,
     author='Konrad R.K. Ludwig',
     author_email='konrad.rk.ludwig@gmail.com',
     url='http://www.konradrkludwig.com/',
     packages=['stackcite'],
-    package_data={'stackcite': ['json/*.json', 'testing/data/*.json']},
+    namespace_packages=['stackcite'],
+    package_data={'stackcite': ['data/json/*.json', 'data/testing/data/*.json']},
     install_requires=requires
 )

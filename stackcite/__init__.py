@@ -1,3 +1,1 @@
-from . import base
-
-from .data.mongo.exceptions import AuthenticationError
+__import__('pkg_resources').declare_namespace(__name__)

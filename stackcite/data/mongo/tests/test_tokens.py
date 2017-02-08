@@ -1,6 +1,6 @@
 import unittest
 
-from stackcite import testing
+from stackcite.data import testing
 
 
 class TokenKeyFieldTestCase(unittest.TestCase):

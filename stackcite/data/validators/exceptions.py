@@ -1,4 +1,4 @@
-from stackcite.base import exceptions as exc
+from stackcite.data import exceptions as exc
 
 
 class ValidationError(exc.StackciteError):

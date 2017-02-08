@@ -3,7 +3,7 @@ import pkg_resources
 
 
 def _load_json_file(filename):
-    path = 'testing/data/' + filename
+    path = 'data/testing/data/' + filename
     json_data = pkg_resources.resource_string('stackcite', path)
     return json.loads(json_data.decode('utf-8'))
 
