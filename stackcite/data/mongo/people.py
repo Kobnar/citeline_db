@@ -58,7 +58,7 @@ class Name(utils.IEmbeddedDocument):
         :param name: A name string
         :return: A 3-tuple (first, middle, last)
         """
-        # TODO: Parse prefixes and suffixes.static
+        # TODO: Parse prefixes and suffixes.json
         name_chunks = name.split()
         name_dict = dict()
 
