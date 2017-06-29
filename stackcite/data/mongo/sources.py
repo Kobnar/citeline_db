@@ -14,6 +14,7 @@ class Source(utils.IDocument):
     A cited source of any type.
     """
 
+    TYPES = ('SOURCE', 'TEXT', 'BOOK')
     MEDIUMS = ('PRINT', 'WEB')
 
     title = mongoengine.StringField(required=True)
