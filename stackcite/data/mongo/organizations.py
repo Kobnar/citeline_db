@@ -11,6 +11,7 @@ class Organization(utils.IDocument):
 
     name = mongoengine.StringField(required=True, unique=True)
     established = mongoengine.IntField()
+    description = mongoengine.StringField()
 
     meta = {'allow_inheritance': True}
 
@@ -18,7 +19,8 @@ class Organization(utils.IDocument):
         return {
             'id': str(self.id) if self.id else None,
             'name': self.name,
-            'established': self.established
+            'established': self.established,
+            'description': self.description
         }
 
 

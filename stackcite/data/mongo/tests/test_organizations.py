@@ -28,12 +28,15 @@ class OrganizationUnitTestLayer(OrganizationBaseTestLayer):
         """
         org_name = 'South Sea Company'
         org_est = 1720
+        org_desc = 'The subject of a most dubious scandal.'
         self.org.name = org_name
         self.org.established = org_est
+        self.org.description = org_desc
         expected = {
             'id': None,
             'name': org_name,
-            'established': org_est}
+            'established': org_est,
+            'description': org_desc}
         result = self.org.serialize()
         self.assertEqual(expected, result)
 
@@ -42,9 +45,11 @@ class OrganizationUnitTestLayer(OrganizationBaseTestLayer):
         """
         name = 'South Sea Company'
         est = 1720
+        desc = 'The subject of a most dubious scandal.'
         data = {
             'name': name,
-            'established': est}
+            'established': est,
+            'description': desc}
         self.org.deserialize(data)
         self.assertEqual(name, self.org.name)
         self.assertEqual(est, self.org.established)
@@ -98,6 +103,7 @@ class PublisherUnitTestLayer(PublisherBaseTestLayer):
             'id': None,
             'name': name,
             'established': est,
+            'description': None,
             'region': region}
         result = self.publisher.serialize()
         self.assertEqual(expected, result)
